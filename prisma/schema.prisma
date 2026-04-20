@@ -44,13 +44,13 @@ model PasswordResetToken {
 }
 
 model Follow {
-  followerId  String
-  followingId String
-  createdAt   DateTime @default(now())
+  follower_id  String
+  following_id String
+  created_at   DateTime @default(now())
 
-  follower  User @relation("followers", fields: [followerId], references: [id], onDelete: Cascade)
-  following User @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
+  follower  User @relation("followers", fields: [follower_id], references: [id], onDelete: Cascade)
+  following User @relation("following", fields: [following_id], references: [id], onDelete: Cascade)
 
-  @@id([followerId, followingId])
+  @@id([follower_id, following_id])
   @@map("follows")
 }

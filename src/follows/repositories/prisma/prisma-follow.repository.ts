@@ -10,8 +10,8 @@ export class PrismaFollowRepository implements FollowRepository {
   async create(followerId: string, followingId: string): Promise<void> {
     await this.prisma.follow.create({
       data: {
-        followerId,
-        followingId,
+        follower_id: followerId,
+        following_id: followingId,
       },
     });
   }
@@ -19,16 +19,16 @@ export class PrismaFollowRepository implements FollowRepository {
   async delete(followerId: string, followingId: string): Promise<void> {
     await this.prisma.follow.delete({
       where: {
-        followerId_followingId: {
-          followerId,
-          followingId,
+        follower_id_following_id: {
+          follower_id: followerId,
+          following_id: followingId,
         },
       },
     });
   }
 
   async findMany(
-    where: { followerId: string } | { followingId: string },
+    where: { follower_id: string } | { following_id: string },
   ): Promise<Follow[]> {
     return await this.prisma.follow.findMany({ where });
   }

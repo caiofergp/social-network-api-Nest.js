@@ -14,10 +14,10 @@ export class FollowsService {
   }
 
   async getFollowers(userId: string) {
-    return this.followRepository.findMany({ followingId: userId });
+    return this.followRepository.findMany({ following_id: userId });
   }
 
   async getFollowing(userId: string) {
-    return this.followRepository.findMany({ followerId: userId });
+    return this.followRepository.findMany({ follower_id: userId });
   }
 }

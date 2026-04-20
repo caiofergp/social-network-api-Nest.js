@@ -1,5 +1,6 @@
 export class Follow {
-  followerId: string;
-  followingId: string;
-  createdAt: Date;
+  follower_id: string;
+  following_id: string;
+
+  created_at: Date;
 }

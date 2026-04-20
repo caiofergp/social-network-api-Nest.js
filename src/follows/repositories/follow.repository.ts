@@ -4,6 +4,6 @@ export abstract class FollowRepository {
   abstract create(followerId: string, followingId: string): Promise<void>;
   abstract delete(followerId: string, followingId: string): Promise<void>;
   abstract findMany(
-    where: { followerId: string } | { followingId: string },
+    where: { follower_id: string } | { following_id: string },
   ): Promise<Follow[]>;
 }
