@@ -22,6 +22,8 @@ model User {
   deleted_at DateTime?
 
   passwordResetTokens PasswordResetToken[]
+  followers           Follow[]             @relation("followers")
+  following           Follow[]             @relation("following")
 
   @@map("users")
 }
@@ -39,4 +41,16 @@ model PasswordResetToken {
   updated_at DateTime @updatedAt
 
   @@map("password_reset_tokens")
+}
+
+model Follow {
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+
+  follower  User @relation("followers", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@id([followerId, followingId])
+  @@map("follows")
 }

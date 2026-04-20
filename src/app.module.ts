@@ -9,6 +9,7 @@ import { BullBoardModule } from '@bull-board/nestjs';
 import { ExpressAdapter } from '@bull-board/express';
 import basicAuth from 'express-basic-auth';
 import { ScheduleModule } from '@nestjs/schedule';
+import { FollowsModule } from './follows/follows.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ScheduleModule } from '@nestjs/schedule';
       })
     }),
     MailModule,
+    FollowsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
