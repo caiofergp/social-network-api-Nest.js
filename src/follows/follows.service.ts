@@ -12,4 +12,12 @@ export class FollowsService {
   async unfollow(followerId: string, followingId: string) {
     await this.followRepository.delete(followerId, followingId);
   }
+
+  async getFollowers(userId: string) {
+    return this.followRepository.findMany({ followingId: userId });
+  }
+
+  async getFollowing(userId: string) {
+    return this.followRepository.findMany({ followerId: userId });
+  }
 }
