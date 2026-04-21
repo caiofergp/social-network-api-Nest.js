@@ -15,6 +15,8 @@ import { DateManagerAdapter } from 'src/adapters/dateManager/dateManager.adapter
 import { DateFnsAdapter } from 'src/adapters/dateManager/dateFns.adapter';
 import { AuthCleanupService } from './auth-cleanup.service';
 import { AuthCleanupProcessor } from './auth-cleanup.processor';
+import { PasswordResetTokenRepository } from './repositories/password-reset-token.repository';
+import { PrismaPasswordResetTokenRepository } from './repositories/prisma/prisma-password-reset-token.repository';
 
 @Module({
   imports: [
@@ -33,10 +35,20 @@ import { AuthCleanupProcessor } from './auth-cleanup.processor';
     AuthCleanupService,
     AuthCleanupProcessor,
     { provide: AuthRepository, useClass: PrismaAuthRepository },
+    {
+      provide: PasswordResetTokenRepository,
+      useClass: PrismaPasswordResetTokenRepository,
+    },
     { provide: HashAdapter, useClass: BcryptAdapter },
     { provide: JwtAdapter, useClass: JsonwebtokenAdapter },
     { provide: DateManagerAdapter, useClass: DateFnsAdapter },
   ],
+  exports: [
+    { provide: AuthRepository, useClass: PrismaAuthRepository },
+    {
+      provide: PasswordResetTokenRepository,
+      useClass: PrismaPasswordResetTokenRepository,
+    },
+  ],
 })
 export class AuthModule {}
-

@@ -9,11 +9,13 @@ import * as crypto from 'crypto';
 import { DateManagerAdapter } from 'src/adapters/dateManager/dateManager.adapter';
 import { resetPasswordTemplate } from '../templates/resetPasswordForm.template';
 import { accountConfirmPageTemplate } from 'src/templates/accountConfirmPageTemplate';
+import { PasswordResetTokenRepository } from './repositories/password-reset-token.repository';
 
 @Injectable()
 export class AuthService {
   constructor(
     private authRepository: AuthRepository,
+    private passwordResetTokenRepository: PasswordResetTokenRepository,
     private hashAdapter: HashAdapter,
     private jwtAdapter: JwtAdapter,
     private mailService: MailService,
@@ -23,7 +25,7 @@ export class AuthService {
   async signin(signInDto: SignInDto) {
     const { email, password } = signInDto;
 
-    const user = await this.authRepository.findByEmail(email);
+    const user = await this.authRepository.findOne({ email });
 
     if (!user) {
       throw new Error('User not found');
@@ -50,7 +52,7 @@ export class AuthService {
   async signup(createAuthDto: SignUpDto) {
     const { name, email, password } = createAuthDto;
 
-    const user = await this.authRepository.findByEmail(email);
+    const user = await this.authRepository.findOne({ email });
 
     if (user) {
       throw new Error('User already exists');
@@ -81,7 +83,7 @@ export class AuthService {
   async confirmAccount(token: string) {
     const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
 
-    const user = await this.authRepository.findByToken(tokenHash);
+    const user = await this.authRepository.findOne({ token: tokenHash });
 
     if (!user) {
       return accountConfirmPageTemplate(false);
@@ -101,7 +103,7 @@ export class AuthService {
   }
 
   async resetPasswordRequest(email: string) {
-    const user = await this.authRepository.findByEmail(email);
+    const user = await this.authRepository.findOne({ email });
 
     if (!user) {
       throw new Error('User not found');
@@ -116,7 +118,7 @@ export class AuthService {
 
     const expiresAt = this.dateManager.addHours(this.dateManager.now(), 1);
 
-    await this.authRepository.createPasswordResetToken({
+    await this.passwordResetTokenRepository.create({
       token: tokenHash,
       expires_at: expiresAt,
       user_id: user.id,
@@ -130,7 +132,7 @@ export class AuthService {
     const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
 
     const passwordResetToken =
-      await this.authRepository.findPasswordResetTokenByToken(tokenHash);
+      await this.passwordResetTokenRepository.findOne({ token: tokenHash });
 
     if (!passwordResetToken) {
       throw new Error('Invalid token');
@@ -150,7 +152,7 @@ export class AuthService {
       password: hashedPassword,
     });
 
-    await this.authRepository.updatePasswordResetToken(passwordResetToken.id, {
+    await this.passwordResetTokenRepository.update(passwordResetToken.id, {
       used_at: this.dateManager.now(),
     });
   }
@@ -159,7 +161,7 @@ export class AuthService {
     const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
 
     const passwordResetToken =
-      await this.authRepository.findPasswordResetTokenByToken(tokenHash);
+      await this.passwordResetTokenRepository.findOne({ token: tokenHash });
 
     if (!passwordResetToken) {
       throw new Error('Invalid token');

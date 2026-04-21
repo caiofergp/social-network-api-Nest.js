@@ -14,15 +14,9 @@ export class PrismaAuthRepository implements AuthRepository {
     });
   }
 
-  async findByEmail(email: string) {
-    return this.prisma.user.findUnique({
-      where: { email },
-    });
-  }
-
-  async findByToken(token: string) {
-    return this.prisma.user.findUnique({
-      where: { token },
+  async findOne(where: Partial<User>) {
+    return this.prisma.user.findFirst({
+      where,
     });
   }
 
@@ -30,28 +24,6 @@ export class PrismaAuthRepository implements AuthRepository {
     return this.prisma.user.update({
       where: { id },
       data,
-    });
-  }
-
-  async createPasswordResetToken(data: Omit<PasswordResetToken, 'id'>) {
-    return await this.prisma.passwordResetToken.create({
-      data,
-    });
-  }
-
-  async updatePasswordResetToken(
-    id: string,
-    data: Partial<PasswordResetToken>,
-  ) {
-    return await this.prisma.passwordResetToken.update({
-      where: { id },
-      data,
-    });
-  }
-
-  async findPasswordResetTokenByToken(token: string) {
-    return await this.prisma.passwordResetToken.findUnique({
-      where: { token },
     });
   }
 
