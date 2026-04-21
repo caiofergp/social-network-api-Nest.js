@@ -1,5 +1,6 @@
-import { Controller, Post, Param, Delete, Get } from '@nestjs/common';
+import { Controller, Post, Param, Delete, Get, Req } from '@nestjs/common';
 import { FollowsService } from './follows.service';
+import type { Request } from 'express';
 
 @Controller('follows')
 export class FollowsController {
@@ -15,19 +16,13 @@ export class FollowsController {
     return this.followsService.getFollowing(userId);
   }
 
-  @Post('follow/:followerId/:followingId')
-  follow(
-    @Param('followerId') followerId: string,
-    @Param('followingId') followingId: string,
-  ) {
-    return this.followsService.follow(followerId, followingId);
+  @Post('follow/:followingId')
+  follow(@Req() req: Request, @Param('followingId') followingId: string) {
+    return this.followsService.follow(req.user!, followingId);
   }
 
-  @Delete('unfollow/:followerId/:followingId')
-  unfollow(
-    @Param('followerId') followerId: string,
-    @Param('followingId') followingId: string,
-  ) {
-    return this.followsService.unfollow(followerId, followingId);
+  @Delete('unfollow/:followingId')
+  unfollow(@Req() req: Request, @Param('followingId') followingId: string) {
+    return this.followsService.unfollow(req.user!, followingId);
   }
 }

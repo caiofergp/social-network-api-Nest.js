@@ -1,16 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { FollowRepository } from './repositories/follow.repository';
+import { User } from 'src/auth/entities/user.entity';
 
 @Injectable()
 export class FollowsService {
   constructor(private readonly followRepository: FollowRepository) {}
 
-  async follow(followerId: string, followingId: string) {
-    await this.followRepository.create(followerId, followingId);
+  async follow(user: User, followingId: string) {
+    await this.followRepository.create(user.id, followingId);
   }
 
-  async unfollow(followerId: string, followingId: string) {
-    await this.followRepository.delete(followerId, followingId);
+  async unfollow(user: User, followingId: string) {
+    await this.followRepository.delete(user.id, followingId);
   }
 
   async getFollowers(userId: string) {
