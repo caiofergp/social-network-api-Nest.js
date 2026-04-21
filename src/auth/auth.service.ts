@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { SignUpDto } from './dto/sign-up.dto';
 import { AuthRepository } from './repositories/auth.repository';
 import { HashAdapter } from '../adapters/hash/hash.adapter';
@@ -28,11 +32,11 @@ export class AuthService {
     const user = await this.authRepository.findOne({ email });
 
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
 
     if (!user.email_verified_at) {
-      throw new Error('User not verified');
+      throw new NotFoundException('User not verified');
     }
 
     const isPasswordValid = await this.hashAdapter.compare(
@@ -41,7 +45,7 @@ export class AuthService {
     );
 
     if (!isPasswordValid) {
-      throw new Error('Invalid password');
+      throw new BadRequestException('Invalid password');
     }
 
     const token = await this.jwtAdapter.generateToken({ id: user.id });
@@ -55,7 +59,7 @@ export class AuthService {
     const user = await this.authRepository.findOne({ email });
 
     if (user) {
-      throw new Error('User already exists');
+      throw new BadRequestException('User already exists');
     }
 
     const hashedPassword = await this.hashAdapter.hash(password);
@@ -106,7 +110,7 @@ export class AuthService {
     const user = await this.authRepository.findOne({ email });
 
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
 
     const rawToken = crypto.randomBytes(32).toString('hex');
@@ -131,19 +135,20 @@ export class AuthService {
   async resetPassword(token: string, password: string) {
     const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
 
-    const passwordResetToken =
-      await this.passwordResetTokenRepository.findOne({ token: tokenHash });
+    const passwordResetToken = await this.passwordResetTokenRepository.findOne({
+      token: tokenHash,
+    });
 
     if (!passwordResetToken) {
-      throw new Error('Invalid token');
+      throw new BadRequestException('Invalid token');
     }
 
     if (passwordResetToken.expires_at < this.dateManager.now()) {
-      throw new Error('Token expired');
+      throw new BadRequestException('Token expired');
     }
 
     if (passwordResetToken.used_at) {
-      throw new Error('Token already used');
+      throw new BadRequestException('Token already used');
     }
 
     const hashedPassword = await this.hashAdapter.hash(password);
@@ -160,11 +165,12 @@ export class AuthService {
   async resetPasswordPage(token: string) {
     const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
 
-    const passwordResetToken =
-      await this.passwordResetTokenRepository.findOne({ token: tokenHash });
+    const passwordResetToken = await this.passwordResetTokenRepository.findOne({
+      token: tokenHash,
+    });
 
     if (!passwordResetToken) {
-      throw new Error('Invalid token');
+      throw new BadRequestException('Invalid token');
     }
 
     if (passwordResetToken.expires_at < this.dateManager.now()) {
