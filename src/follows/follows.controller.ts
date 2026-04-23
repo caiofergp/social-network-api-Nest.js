@@ -1,7 +1,17 @@
-import { Controller, Post, Param, Delete, Get, Req } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Param,
+  Delete,
+  Get,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { FollowsService } from './follows.service';
 import type { Request } from 'express';
+import { AuthGuard } from 'src/guards/auth.guard';
 
+@UseGuards(AuthGuard)
 @Controller('follows')
 export class FollowsController {
   constructor(private readonly followsService: FollowsService) {}

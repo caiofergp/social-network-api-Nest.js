@@ -49,6 +49,7 @@ import { PrismaPasswordResetTokenRepository } from './repositories/prisma/prisma
       provide: PasswordResetTokenRepository,
       useClass: PrismaPasswordResetTokenRepository,
     },
+    { provide: JwtAdapter, useClass: JsonwebtokenAdapter },
   ],
 })
 export class AuthModule {}

@@ -26,9 +26,11 @@ import { FollowsModule } from './follows/follows.module';
       route: '/admin/queues',
       adapter: ExpressAdapter,
       middleware: basicAuth({
-        users: { [process.env.BULL_ADMIN_USER!]: process.env.BULL_ADMIN_PASSWORD! },
+        users: {
+          [process.env.BULL_ADMIN_USER!]: process.env.BULL_ADMIN_PASSWORD!,
+        },
         challenge: true,
-      })
+      }),
     }),
     MailModule,
     FollowsModule,
