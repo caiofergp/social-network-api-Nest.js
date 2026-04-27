@@ -8,6 +8,17 @@ import { randomUUID } from 'node:crypto';
 export class PrismaPostMediaRepository implements PostMediaRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  async findByIdNotIn(ids: string[], postId: string): Promise<PostMedia[]> {
+    return await this.prisma.db.postMedia.findMany({
+      where: {
+        post_id: postId,
+        id: {
+          notIn: ids,
+        },
+      },
+    });
+  }
+
   async create(
     data: Omit<PostMedia, 'id' | 'created_at' | 'updated_at' | 'deleted_at'>,
   ): Promise<PostMedia> {
@@ -23,9 +34,19 @@ export class PrismaPostMediaRepository implements PostMediaRepository {
     }));
 
     await this.prisma.db.postMedia.createMany({
-      data,
+      data: dataWithId,
     });
 
     return dataWithId;
+  }
+
+  async deleteMany(ids: string[]): Promise<void> {
+    await this.prisma.db.postMedia.deleteMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+    });
   }
 }

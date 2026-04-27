@@ -65,8 +65,8 @@ model Post {
   updated_at DateTime  @updatedAt
   deleted_at DateTime?
 
-  user  User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  media PostMedia[]
+  user   User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  medias PostMedia[]
 
   @@map("posts")
 }

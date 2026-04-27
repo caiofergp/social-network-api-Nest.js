@@ -4,6 +4,6 @@ export abstract class StorageAdapter {
     expiresIn?: number,
     maxSize?: number,
   ): Promise<any>;
-
   abstract moveObject(oldPath: string, newPath: string): Promise<void>;
+  abstract deleteObject(path: string): Promise<void>;
 }

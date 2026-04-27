@@ -69,4 +69,17 @@ export class MinionAdapter implements StorageAdapter {
       throw error;
     }
   }
+
+  async deleteObject(path: string): Promise<void> {
+    try {
+      await this.client.removeObject(this.bucket, path);
+    } catch (error) {
+      console.error('Error deleting object:', {
+        bucket: this.bucket,
+        path,
+        error: error.message,
+      });
+      throw error;
+    }
+  }
 }
