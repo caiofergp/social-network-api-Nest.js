@@ -24,6 +24,7 @@ model User {
   passwordResetTokens PasswordResetToken[]
   followers           Follow[]             @relation("followers")
   following           Follow[]             @relation("following")
+  posts               Post[]
 
   @@map("users")
 }
@@ -53,4 +54,35 @@ model Follow {
 
   @@id([follower_id, following_id])
   @@map("follows")
+}
+
+model Post {
+  id      String  @id @default(uuid())
+  content String?
+  user_id String
+
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+
+  user  User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  media PostMedia[]
+
+  @@map("posts")
+}
+
+model PostMedia {
+  id      String  @id @default(uuid())
+  post_id String
+  url     String?
+  type    String
+  path    String
+
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+
+  post Post @relation(fields: [post_id], references: [id])
+
+  @@map("post_media")
 }

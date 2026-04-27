@@ -2,6 +2,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 import * as dotenv from 'dotenv';
 import { PrismaClient } from 'src/generated/prisma/client';
+import { prismaContext } from './prisma-context';
 
 dotenv.config();
 
@@ -15,11 +16,15 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     }
 
     const adapter = new PrismaMariaDb(databaseUrl);
-    
+
     super({ adapter });
   }
 
   async onModuleInit() {
     await this.$connect();
+  }
+
+  get db(): PrismaClient {
+    return prismaContext.getStore()?.prismaClient || this;
   }
 }
