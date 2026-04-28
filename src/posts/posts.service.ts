@@ -10,6 +10,7 @@ import { StorageAdapter } from 'src/adapters/storage/storage.adapter';
 import { UnitOfWork } from 'src/db/unit-of-work';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostMedia } from './entities/post-media.entity';
+import { LikeRepository } from './repositories/like.repository';
 
 @Injectable()
 export class PostsService {
@@ -18,6 +19,7 @@ export class PostsService {
     private readonly postMediaRepository: PostMediaRepository,
     private readonly storageAdapter: StorageAdapter,
     private readonly unitOfWork: UnitOfWork,
+    private readonly likeRepository: LikeRepository,
   ) {}
 
   async create(createPostDto: CreatePostDto, userId: string) {
@@ -171,5 +173,17 @@ export class PostsService {
 
       return { success: true };
     });
+  }
+
+  async addLike(postId: string, userId: string) {
+    await this.likeRepository.create(postId, userId);
+
+    return { success: true };
+  }
+
+  async deleteLike(postId: string, userId: string) {
+    await this.likeRepository.delete(postId, userId);
+
+    return { success: true };
   }
 }

@@ -10,6 +10,8 @@ import { MinionAdapter } from 'src/adapters/storage/minion.adapter';
 import { PrismaModule } from 'src/db/prisma/prisma.module';
 import { PostMediaRepository } from './repositories/post-media.repository';
 import { PrismaPostMediaRepository } from './repositories/prisma/prisma-post-media.repositrory';
+import { LikeRepository } from './repositories/like.repository';
+import { PrismaLikeRepository } from './repositories/prisma/prisma-like-repository';
 
 @Module({
   imports: [AuthModule, PrismaModule],
@@ -19,6 +21,7 @@ import { PrismaPostMediaRepository } from './repositories/prisma/prisma-post-med
     { provide: PostRepository, useClass: PrismaPostRepository },
     { provide: PostMediaRepository, useClass: PrismaPostMediaRepository },
     { provide: StorageAdapter, useClass: MinionAdapter },
+    { provide: LikeRepository, useClass: PrismaLikeRepository },
   ],
 })
 export class PostsModule {}

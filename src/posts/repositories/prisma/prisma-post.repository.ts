@@ -48,6 +48,10 @@ export class PrismaPostRepository implements PostRepository {
       },
     });
 
+    await this.prisma.db.like.deleteMany({
+      where: { post_id: id },
+    });
+
     if (!updatedPost) {
       throw new NotFoundException('Post not found');
     }

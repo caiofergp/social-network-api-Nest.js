@@ -37,4 +37,14 @@ export class PostsController {
   delete(@Param('id') id: string, @Req() req: Request) {
     return this.postsService.delete(id, req.user?.id!);
   }
+
+  @Post('/:id/like')
+  like(@Param('id') id: string, @Req() req: Request) {
+    return this.postsService.addLike(id, req.user?.id!);
+  }
+
+  @Delete('/:id/like')
+  unlike(@Param('id') id: string, @Req() req: Request) {
+    return this.postsService.deleteLike(id, req.user?.id!);
+  }
 }
