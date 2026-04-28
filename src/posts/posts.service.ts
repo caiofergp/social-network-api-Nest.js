@@ -1,11 +1,15 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotAcceptableException,
+} from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { PostRepository } from './repositories/post.repository';
 import { PostMediaRepository } from './repositories/post-media.repository';
 import { StorageAdapter } from 'src/adapters/storage/storage.adapter';
 import { UnitOfWork } from 'src/db/unit-of-work';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { PostMedia } from './entities/post-media';
+import { PostMedia } from './entities/post-media.entity';
 
 @Injectable()
 export class PostsService {
@@ -63,18 +67,19 @@ export class PostsService {
   }
 
   async update(updatePostDto: UpdatePostDto, postId: string, userId: string) {
+    const post = await this.postRepository.findOne(postId);
+
+    if (!post) {
+      throw new NotAcceptableException('Post not found');
+    }
+
+    if (post.user_id !== userId) {
+      throw new BadRequestException('You are not the owner of this post');
+    }
+
+    const { post: postData, medias } = updatePostDto;
+
     return await this.unitOfWork.runInTransaction(async () => {
-      const post = await this.postRepository.findOne(postId);
-
-      if (!post) {
-        throw new BadRequestException('Post not found');
-      }
-
-      if (post.user_id !== userId) {
-        throw new BadRequestException('You are not the owner of this post');
-      }
-      const { post: postData, medias } = updatePostDto;
-
       let updatedPost = post;
       let mediasToDelete: PostMedia[] = [];
 
@@ -134,11 +139,37 @@ export class PostsService {
 
         return {
           post: updatedPost,
-          medias: [...createdMedias, ...mediaWithIds] as any,
+          medias: [...createdMedias, ...mediaWithIds],
         };
       }
 
       return updatedPost;
+    });
+  }
+
+  async delete(postId: string, userId: string) {
+    const post = await this.postRepository.findOne(postId, { medias: true });
+
+    if (!post) {
+      throw new NotAcceptableException('Post not found');
+    }
+
+    if (post.user_id !== userId) {
+      throw new BadRequestException('You are not the owner of this post');
+    }
+
+    return await this.unitOfWork.runInTransaction(async () => {
+      await this.postRepository.delete(postId);
+
+      if (post.medias?.length) {
+        await Promise.all(
+          post.medias.map((media) =>
+            this.storageAdapter.deleteObject(media.path),
+          ),
+        );
+      }
+
+      return { success: true };
     });
   }
 }

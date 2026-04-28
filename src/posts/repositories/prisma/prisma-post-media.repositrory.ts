@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/db/prisma/prisma.service';
 import { PostMediaRepository } from '../post-media.repository';
-import { PostMedia } from '../../entities/post-media';
+import { PostMedia } from '../../entities/post-media.entity';
 import { randomUUID } from 'node:crypto';
 
 @Injectable()

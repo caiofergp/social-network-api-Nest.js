@@ -10,4 +10,5 @@ export abstract class PostRepository {
   ): Promise<Post>;
   abstract findOne(id: string, options?: PostFindOptions): Promise<Post | null>;
   abstract update(id: string, data: Partial<Post>): Promise<Post>;
+  abstract delete(id: string): Promise<void>;
 }

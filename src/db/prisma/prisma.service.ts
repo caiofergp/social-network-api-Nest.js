@@ -8,6 +8,8 @@ dotenv.config();
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
+  private readonly _proxy: PrismaClient;
+
   constructor() {
     const databaseUrl = process.env.DATABASE_URL;
 
@@ -18,6 +20,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     const adapter = new PrismaMariaDb(databaseUrl);
 
     super({ adapter });
+    this._proxy = this;
   }
 
   async onModuleInit() {
@@ -25,6 +28,6 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
   }
 
   get db(): PrismaClient {
-    return prismaContext.getStore()?.prismaClient || this;
+    return prismaContext.getStore()?.prismaClient || this._proxy;
   }
 }

@@ -6,6 +6,7 @@ import {
   Req,
   Param,
   Patch,
+  Delete,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -30,5 +31,10 @@ export class PostsController {
     @Req() req: Request,
   ) {
     return this.postsService.update(updatePostDto, id, req.user?.id!);
+  }
+
+  @Delete('/:id')
+  delete(@Param('id') id: string, @Req() req: Request) {
+    return this.postsService.delete(id, req.user?.id!);
   }
 }

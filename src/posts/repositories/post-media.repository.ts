@@ -1,4 +1,4 @@
-import { PostMedia } from '../entities/post-media';
+import { PostMedia } from '../entities/post-media.entity';
 
 type CreatePostMedia = 'id' | 'created_at' | 'updated_at' | 'deleted_at';
 
