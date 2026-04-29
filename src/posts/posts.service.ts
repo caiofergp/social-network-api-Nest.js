@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotAcceptableException,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { PostRepository } from './repositories/post.repository';
@@ -11,6 +12,10 @@ import { UnitOfWork } from 'src/db/unit-of-work';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostMedia } from './entities/post-media.entity';
 import { LikeRepository } from './repositories/like.repository';
+import { CreatePostCommentDto } from './dto/create-post-comment.dto';
+import { CommentRepository } from './repositories/comment.repository';
+import { UpdatePostCommentDto } from './dto/update-post-comment.dto';
+import { PaginationDto } from '../db/dto/pagination.dto';
 
 @Injectable()
 export class PostsService {
@@ -20,6 +25,7 @@ export class PostsService {
     private readonly storageAdapter: StorageAdapter,
     private readonly unitOfWork: UnitOfWork,
     private readonly likeRepository: LikeRepository,
+    private readonly commentRepository: CommentRepository,
   ) {}
 
   async create(createPostDto: CreatePostDto, userId: string) {
@@ -183,6 +189,73 @@ export class PostsService {
 
   async deleteLike(postId: string, userId: string) {
     await this.likeRepository.delete(postId, userId);
+
+    return { success: true };
+  }
+
+  async getPostComments(postId: string, query: PaginationDto) {
+    const comments = await this.commentRepository.findByPostId(
+      postId,
+      query?.limit || 20,
+      query?.offset || 0,
+    );
+
+    return { comments };
+  }
+
+  async getPostCommentsChildren(commentId: string, query: PaginationDto) {
+    const comments = await this.commentRepository.findChildrenByCommentId(
+      commentId,
+      query?.limit || 20,
+      query?.offset || 0,
+    );
+
+    return { comments };
+  }
+
+  async addComment(id: string, data: CreatePostCommentDto, userId: string) {
+    const post = await this.postRepository.findOne(id);
+
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    }
+
+    const comment = await this.commentRepository.create({
+      ...data,
+      post_id: id,
+      user_id: userId,
+    });
+
+    return { comment };
+  }
+
+  async updateComment(id: string, data: UpdatePostCommentDto, userId: string) {
+    const comment = await this.commentRepository.findById(id);
+
+    if (!comment) {
+      throw new NotFoundException('Comment not found');
+    }
+
+    if (comment.user_id !== userId) {
+      throw new BadRequestException('You are not the owner of this comment');
+    }
+
+    await this.commentRepository.update(id, data);
+
+    return { success: true };
+  }
+
+  async deleteComment(commentId: string, userId: string) {
+    const comment = await this.commentRepository.findById(commentId);
+
+    if (!comment) {
+      throw new NotFoundException('Comment not found');
+    }
+
+    if (comment.user_id !== userId) {
+      throw new BadRequestException('You are not the owner of this comment');
+    }
+    await this.commentRepository.delete(commentId);
 
     return { success: true };
   }

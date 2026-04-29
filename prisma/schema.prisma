@@ -26,6 +26,7 @@ model User {
   following           Follow[]             @relation("following")
   posts               Post[]
   likes               Like[]
+  comments            Comment[]
 
   @@map("users")
 }
@@ -66,9 +67,10 @@ model Post {
   updated_at DateTime  @updatedAt
   deleted_at DateTime?
 
-  user   User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  medias PostMedia[]
-  likes  Like[]
+  user     User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  medias   PostMedia[]
+  likes    Like[]
+  comments Comment[]
 
   @@map("posts")
 }
@@ -99,4 +101,23 @@ model Like {
 
   @@id([user_id, post_id])
   @@map("likes")
+}
+
+model Comment {
+  id        String  @id @default(uuid())
+  user_id   String
+  post_id   String
+  parent_id String?
+  content   String
+
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+
+  user     User      @relation(fields: [user_id], references: [id])
+  post     Post      @relation(fields: [post_id], references: [id])
+  parent   Comment?  @relation("parent", fields: [parent_id], references: [id])
+  children Comment[] @relation("parent")
+
+  @@map("comments")
 }

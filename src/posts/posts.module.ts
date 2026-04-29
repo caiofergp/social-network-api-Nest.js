@@ -12,6 +12,8 @@ import { PostMediaRepository } from './repositories/post-media.repository';
 import { PrismaPostMediaRepository } from './repositories/prisma/prisma-post-media.repositrory';
 import { LikeRepository } from './repositories/like.repository';
 import { PrismaLikeRepository } from './repositories/prisma/prisma-like-repository';
+import { CommentRepository } from './repositories/comment.repository';
+import { PrismaCommentRepository } from './repositories/prisma/prisma-comment.repository';
 
 @Module({
   imports: [AuthModule, PrismaModule],
@@ -22,6 +24,7 @@ import { PrismaLikeRepository } from './repositories/prisma/prisma-like-reposito
     { provide: PostMediaRepository, useClass: PrismaPostMediaRepository },
     { provide: StorageAdapter, useClass: MinionAdapter },
     { provide: LikeRepository, useClass: PrismaLikeRepository },
+    { provide: CommentRepository, useClass: PrismaCommentRepository },
   ],
 })
 export class PostsModule {}
