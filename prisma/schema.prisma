@@ -69,7 +69,7 @@ model Post {
 
   user     User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
   medias   PostMedia[]
-  likes    Like[]
+  likes    Like[]      @relation("postLike")
   comments Comment[]
 
   @@map("posts")
@@ -92,14 +92,16 @@ model PostMedia {
 }
 
 model Like {
-  user_id    String
-  post_id    String
-  created_at DateTime @default(now())
+  user_id      String
+  reference_id String
+  created_at   DateTime @default(now())
+  type         String // post | comment
 
-  user Post @relation(fields: [post_id], references: [id])
-  post User @relation(fields: [user_id], references: [id])
+  user    User    @relation(fields: [user_id], references: [id])
+  post    Post    @relation("postLike", fields: [reference_id], references: [id], map: "likes_post_reference_id_fkey")
+  comment Comment @relation("commentLike", fields: [reference_id], references: [id], map: "likes_comment_reference_id_fkey")
 
-  @@id([user_id, post_id])
+  @@id([user_id, reference_id])
   @@map("likes")
 }
 
@@ -118,6 +120,7 @@ model Comment {
   post     Post      @relation(fields: [post_id], references: [id])
   parent   Comment?  @relation("parent", fields: [parent_id], references: [id])
   children Comment[] @relation("parent")
+  likes    Like[]    @relation("commentLike")
 
   @@map("comments")
 }

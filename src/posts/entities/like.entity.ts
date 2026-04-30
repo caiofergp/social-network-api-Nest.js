@@ -1,12 +1,15 @@
 import { User } from 'src/auth/entities/user.entity';
 import { Post } from './post.entity';
+import { Comment } from './comment.entity';
 
 export class Like {
   user_id: string;
-  post_id: string;
+  reference_id: string;
+  type: string;
 
-  post?: Post | null;
   user?: User | null;
+  post?: Post | null;
+  comment?: Comment | null;
 
   created_at: Date;
 }

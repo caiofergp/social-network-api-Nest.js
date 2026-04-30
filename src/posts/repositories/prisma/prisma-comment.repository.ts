@@ -29,6 +29,11 @@ export class PrismaCommentRepository implements CommentRepository {
         where,
         include: {
           user: true,
+          _count: {
+            select: {
+              likes: true,
+            },
+          },
           children: {
             take: 2,
             include: {
@@ -58,6 +63,11 @@ export class PrismaCommentRepository implements CommentRepository {
         where,
         include: {
           user: true,
+          _count: {
+            select: {
+              likes: true,
+            },
+          },
           children: {
             take: 2,
             include: {

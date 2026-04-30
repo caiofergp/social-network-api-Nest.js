@@ -12,7 +12,7 @@ export type UpdateCommentData = CreateCommentData & {
 };
 
 export type CommentResponse = {
-  comments: Comment[];
+  comments: (Comment & { _count: { likes: number } })[];
   total: number;
 };
 

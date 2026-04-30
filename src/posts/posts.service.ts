@@ -11,7 +11,10 @@ import { StorageAdapter } from 'src/adapters/storage/storage.adapter';
 import { UnitOfWork } from 'src/db/unit-of-work';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostMedia } from './entities/post-media.entity';
-import { LikeRepository } from './repositories/like.repository';
+import {
+  LikeReferenceType,
+  LikeRepository,
+} from './repositories/like.repository';
 import { CreatePostCommentDto } from './dto/create-post-comment.dto';
 import { CommentRepository } from './repositories/comment.repository';
 import { UpdatePostCommentDto } from './dto/update-post-comment.dto';
@@ -181,8 +184,8 @@ export class PostsService {
     });
   }
 
-  async addLike(postId: string, userId: string) {
-    await this.likeRepository.create(postId, userId);
+  async addLike(postId: string, userId: string, type: LikeReferenceType) {
+    await this.likeRepository.create(postId, userId, type);
 
     return { success: true };
   }

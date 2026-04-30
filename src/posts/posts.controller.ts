@@ -18,6 +18,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { UpdatePostCommentDto } from './dto/update-post-comment.dto';
 import { CreatePostCommentDto } from './dto/create-post-comment.dto';
 import { PaginationDto } from '../db/dto/pagination.dto';
+import { LikeReferenceType } from './repositories/like.repository';
 
 @UseGuards(AuthGuard)
 @Controller('posts')
@@ -45,7 +46,16 @@ export class PostsController {
 
   @Post('/:id/like')
   like(@Param('id') id: string, @Req() req: Request) {
-    return this.postsService.addLike(id, req.user?.id!);
+    return this.postsService.addLike(id, req.user?.id!, LikeReferenceType.POST);
+  }
+
+  @Post('/comments/:id/like')
+  commentLike(@Param('id') id: string, @Req() req: Request) {
+    return this.postsService.addLike(
+      id,
+      req.user?.id!,
+      LikeReferenceType.COMMENT,
+    );
   }
 
   @Delete('/:id/like')
