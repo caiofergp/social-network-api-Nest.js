@@ -98,4 +98,14 @@ export class PostsController {
   deleteComment(@Param('commentId') commentId: string, @Req() req: Request) {
     return this.postsService.deleteComment(commentId, req.user?.id!);
   }
+
+  @Post('/:id/share')
+  sharePost(@Param('id') id: string, @Req() req: Request) {
+    return this.postsService.sharePost(id, req.user?.id!);
+  }
+
+  @Delete('/share/:sharedId')
+  unsharePost(@Param('sharedId') sharedId: string, @Req() req: Request) {
+    return this.postsService.unsharePost(sharedId, req.user?.id!);
+  }
 }

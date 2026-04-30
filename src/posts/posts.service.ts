@@ -19,6 +19,7 @@ import { CreatePostCommentDto } from './dto/create-post-comment.dto';
 import { CommentRepository } from './repositories/comment.repository';
 import { UpdatePostCommentDto } from './dto/update-post-comment.dto';
 import { PaginationDto } from '../db/dto/pagination.dto';
+import { SharedPostRepository } from './repositories/shared-post.repository';
 
 @Injectable()
 export class PostsService {
@@ -29,6 +30,7 @@ export class PostsService {
     private readonly unitOfWork: UnitOfWork,
     private readonly likeRepository: LikeRepository,
     private readonly commentRepository: CommentRepository,
+    private readonly sharedPostRepository: SharedPostRepository,
   ) {}
 
   async create(createPostDto: CreatePostDto, userId: string) {
@@ -259,6 +261,36 @@ export class PostsService {
       throw new BadRequestException('You are not the owner of this comment');
     }
     await this.commentRepository.delete(commentId);
+
+    return { success: true };
+  }
+
+  async sharePost(postId: string, userId: string) {
+    const post = await this.postRepository.findOne(postId);
+
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    }
+
+    const sharedPost = await this.sharedPostRepository.create(userId, postId);
+
+    return { sharedPost };
+  }
+
+  async unsharePost(sharedId: string, userId: string) {
+    const sharedPost = await this.sharedPostRepository.findById(sharedId);
+
+    if (!sharedPost) {
+      throw new NotFoundException('Shared post not found');
+    }
+
+    if (sharedPost.user_id !== userId) {
+      throw new BadRequestException(
+        'You are not the owner of this shared post',
+      );
+    }
+
+    await this.sharedPostRepository.delete(sharedId);
 
     return { success: true };
   }

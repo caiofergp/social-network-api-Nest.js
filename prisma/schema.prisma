@@ -27,6 +27,7 @@ model User {
   posts               Post[]
   likes               Like[]
   comments            Comment[]
+  shareds             SharedPost[]
 
   @@map("users")
 }
@@ -67,10 +68,11 @@ model Post {
   updated_at DateTime  @updatedAt
   deleted_at DateTime?
 
-  user     User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user     User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
   medias   PostMedia[]
-  likes    Like[]      @relation("postLike")
+  likes    Like[]       @relation("postLike")
   comments Comment[]
+  shareds  SharedPost[]
 
   @@map("posts")
 }
@@ -123,4 +125,17 @@ model Comment {
   likes    Like[]    @relation("commentLike")
 
   @@map("comments")
+}
+
+model SharedPost {
+  id      String @id @default(uuid())
+  post_id String
+  user_id String
+
+  created_at DateTime @default(now())
+
+  post Post @relation(fields: [post_id], references: [id])
+  user User @relation(fields: [user_id], references: [id])
+
+  @@map("shared_posts")
 }

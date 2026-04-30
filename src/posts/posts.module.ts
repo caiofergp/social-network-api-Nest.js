@@ -14,6 +14,8 @@ import { LikeRepository } from './repositories/like.repository';
 import { PrismaLikeRepository } from './repositories/prisma/prisma-like-repository';
 import { CommentRepository } from './repositories/comment.repository';
 import { PrismaCommentRepository } from './repositories/prisma/prisma-comment.repository';
+import { SharedPostRepository } from './repositories/shared-post.repository';
+import { PrismaSharedPostRepository } from './repositories/prisma/prisma-shared-post.repository';
 
 @Module({
   imports: [AuthModule, PrismaModule],
@@ -25,6 +27,7 @@ import { PrismaCommentRepository } from './repositories/prisma/prisma-comment.re
     { provide: StorageAdapter, useClass: MinionAdapter },
     { provide: LikeRepository, useClass: PrismaLikeRepository },
     { provide: CommentRepository, useClass: PrismaCommentRepository },
+    { provide: SharedPostRepository, useClass: PrismaSharedPostRepository },
   ],
 })
 export class PostsModule {}
