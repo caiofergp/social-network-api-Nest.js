@@ -12,10 +12,21 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { FollowsModule } from './follows/follows.module';
 import { PostsModule } from './posts/posts.module';
 import { StorageModule } from './storage/storage.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
     ScheduleModule.forRoot(),
+    EventEmitterModule.forRoot({
+      wildcard: false,
+      delimiter: '.',
+      newListener: false,
+      removeListener: false,
+      maxListeners: 10,
+      verboseMemoryLeak: false,
+      ignoreErrors: false,
+    }),
     AuthModule,
     PrismaModule,
     BullModule.forRoot({
@@ -38,6 +49,7 @@ import { StorageModule } from './storage/storage.module';
     FollowsModule,
     PostsModule,
     StorageModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

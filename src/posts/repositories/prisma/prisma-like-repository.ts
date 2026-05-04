@@ -17,14 +17,9 @@ export class PrismaLikeRepository implements LikeRepository {
     });
   }
 
-  async delete(referenceId: string, userId: string): Promise<Like> {
+  async delete(id: string): Promise<Like> {
     return await this.prisma.db.like.delete({
-      where: {
-        user_id_reference_id: {
-          user_id: userId,
-          reference_id: referenceId,
-        },
-      },
+      where: { id },
     });
   }
 }

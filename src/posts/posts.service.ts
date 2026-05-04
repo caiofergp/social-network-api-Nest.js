@@ -20,6 +20,10 @@ import { CommentRepository } from './repositories/comment.repository';
 import { UpdatePostCommentDto } from './dto/update-post-comment.dto';
 import { PaginationDto } from '../db/dto/pagination.dto';
 import { SharedPostRepository } from './repositories/shared-post.repository';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { PrismaErrorCode } from 'src/db/prisma/prisma-erro-code';
+import { User } from 'src/auth/entities/user.entity';
+import { BaseNotificationPayload } from 'src/notifications/notifications.listener';
 
 @Injectable()
 export class PostsService {
@@ -31,6 +35,7 @@ export class PostsService {
     private readonly likeRepository: LikeRepository,
     private readonly commentRepository: CommentRepository,
     private readonly sharedPostRepository: SharedPostRepository,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async create(createPostDto: CreatePostDto, userId: string) {
@@ -186,14 +191,38 @@ export class PostsService {
     });
   }
 
-  async addLike(postId: string, userId: string, type: LikeReferenceType) {
-    await this.likeRepository.create(postId, userId, type);
+  async addLike(postId: string, user: User, type: LikeReferenceType) {
+    const post = await this.postRepository.findOne(postId, { user: true });
+
+    if (!post) {
+      throw new NotAcceptableException('Post not found');
+    }
+
+    const like = await this.likeRepository
+      .create(postId, user.id, type)
+      .catch((err) => {
+        if (err.code === PrismaErrorCode.uniqueConstraint) {
+          throw new BadRequestException('You already liked this post');
+        }
+
+        throw err;
+      });
+
+    this.eventEmitter.emit(
+      'post.liked',
+      new BaseNotificationPayload({
+        actorId: user.id,
+        actorName: user.name,
+        recipientId: post.user_id,
+        referenceId: like.id,
+      }),
+    );
 
     return { success: true };
   }
 
-  async deleteLike(postId: string, userId: string) {
-    await this.likeRepository.delete(postId, userId);
+  async deleteLike(likeId: string) {
+    await this.likeRepository.delete(likeId);
 
     return { success: true };
   }
@@ -218,7 +247,7 @@ export class PostsService {
     return { comments };
   }
 
-  async addComment(id: string, data: CreatePostCommentDto, userId: string) {
+  async addComment(id: string, data: CreatePostCommentDto, user: User) {
     const post = await this.postRepository.findOne(id);
 
     if (!post) {
@@ -228,8 +257,18 @@ export class PostsService {
     const comment = await this.commentRepository.create({
       ...data,
       post_id: id,
-      user_id: userId,
+      user_id: user.id,
     });
+
+    this.eventEmitter.emit(
+      'comment.created',
+      new BaseNotificationPayload({
+        actorId: user.id,
+        actorName: user.name,
+        recipientId: post.user_id,
+        referenceId: comment.id,
+      }),
+    );
 
     return { comment };
   }
@@ -265,14 +304,24 @@ export class PostsService {
     return { success: true };
   }
 
-  async sharePost(postId: string, userId: string) {
+  async sharePost(postId: string, user: User) {
     const post = await this.postRepository.findOne(postId);
 
     if (!post) {
       throw new NotFoundException('Post not found');
     }
 
-    const sharedPost = await this.sharedPostRepository.create(userId, postId);
+    const sharedPost = await this.sharedPostRepository.create(user.id, postId);
+
+    this.eventEmitter.emit(
+      'post.shared',
+      new BaseNotificationPayload({
+        actorId: user.id,
+        actorName: user.name,
+        recipientId: post.user_id,
+        referenceId: sharedPost.id,
+      }),
+    );
 
     return { sharedPost };
   }

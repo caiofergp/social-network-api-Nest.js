@@ -21,13 +21,15 @@ model User {
   updated_at DateTime  @updatedAt
   deleted_at DateTime?
 
-  passwordResetTokens PasswordResetToken[]
-  followers           Follow[]             @relation("followers")
-  following           Follow[]             @relation("following")
-  posts               Post[]
-  likes               Like[]
-  comments            Comment[]
-  shareds             SharedPost[]
+  passwordResetTokens   PasswordResetToken[]
+  followers             Follow[]             @relation("followers")
+  following             Follow[]             @relation("following")
+  posts                 Post[]
+  likes                 Like[]
+  comments              Comment[]
+  shareds               SharedPost[]
+  notifications         Notification[]
+  receivedNotifications Notification[]       @relation("receivedNotification")
 
   @@map("users")
 }
@@ -48,14 +50,17 @@ model PasswordResetToken {
 }
 
 model Follow {
+  id           String @id @default(uuid())
   follower_id  String
   following_id String
-  created_at   DateTime @default(now())
 
-  follower  User @relation("followers", fields: [follower_id], references: [id], onDelete: Cascade)
-  following User @relation("following", fields: [following_id], references: [id], onDelete: Cascade)
+  created_at DateTime @default(now())
 
-  @@id([follower_id, following_id])
+  follower           User           @relation("followers", fields: [follower_id], references: [id], onDelete: Cascade)
+  following          User           @relation("following", fields: [following_id], references: [id], onDelete: Cascade)
+  followNotification Notification[] @relation("followNotification")
+
+  @@unique([follower_id, following_id])
   @@map("follows")
 }
 
@@ -68,11 +73,12 @@ model Post {
   updated_at DateTime  @updatedAt
   deleted_at DateTime?
 
-  user     User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  medias   PostMedia[]
-  likes    Like[]       @relation("postLike")
-  comments Comment[]
-  shareds  SharedPost[]
+  user                 User           @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  medias               PostMedia[]
+  likes                Like[]         @relation("postLike")
+  comments             Comment[]
+  shareds              SharedPost[]
+  postLikeNotification Notification[] @relation("postLikeNotification")
 
   @@map("posts")
 }
@@ -94,6 +100,7 @@ model PostMedia {
 }
 
 model Like {
+  id           String   @id @default(uuid())
   user_id      String
   reference_id String
   created_at   DateTime @default(now())
@@ -103,7 +110,7 @@ model Like {
   post    Post    @relation("postLike", fields: [reference_id], references: [id], map: "likes_post_reference_id_fkey")
   comment Comment @relation("commentLike", fields: [reference_id], references: [id], map: "likes_comment_reference_id_fkey")
 
-  @@id([user_id, reference_id])
+  @@unique([reference_id, user_id])
   @@map("likes")
 }
 
@@ -118,11 +125,12 @@ model Comment {
   updated_at DateTime  @updatedAt
   deleted_at DateTime?
 
-  user     User      @relation(fields: [user_id], references: [id])
-  post     Post      @relation(fields: [post_id], references: [id])
-  parent   Comment?  @relation("parent", fields: [parent_id], references: [id])
-  children Comment[] @relation("parent")
-  likes    Like[]    @relation("commentLike")
+  user                    User           @relation(fields: [user_id], references: [id])
+  post                    Post           @relation(fields: [post_id], references: [id])
+  parent                  Comment?       @relation("parent", fields: [parent_id], references: [id])
+  children                Comment[]      @relation("parent")
+  likes                   Like[]         @relation("commentLike")
+  commentLikeNotification Notification[] @relation("commentLikeNotification")
 
   @@map("comments")
 }
@@ -134,8 +142,31 @@ model SharedPost {
 
   created_at DateTime @default(now())
 
-  post Post @relation(fields: [post_id], references: [id])
-  user User @relation(fields: [user_id], references: [id])
+  post              Post           @relation(fields: [post_id], references: [id])
+  user              User           @relation(fields: [user_id], references: [id])
+  shareNotification Notification[] @relation("shareNotification")
 
   @@map("shared_posts")
+}
+
+model Notification {
+  id           String  @id @default(uuid())
+  actor_id     String
+  recipient_id String
+  type         String // follow | comment | like | share
+  reference_id String
+  read         Boolean @default(false)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  actor     User @relation(fields: [actor_id], references: [id])
+  recipient User @relation("receivedNotification", fields: [recipient_id], references: [id])
+
+  followedUser Follow?     @relation("followNotification", fields: [reference_id], references: [id], map: "notifications_follow_reference_id_fkey")
+  likedComment Comment?    @relation("commentLikeNotification", fields: [reference_id], references: [id], map: "notifications_comment_like_reference_id_fkey")
+  likedPost    Post?       @relation("postLikeNotification", fields: [reference_id], references: [id], map: "notifications_post_like_reference_id_fkey")
+  sharedPost   SharedPost? @relation("shareNotification", fields: [reference_id], references: [id], map: "notifications_share_reference_id_fkey")
+
+  @@map("notifications")
 }

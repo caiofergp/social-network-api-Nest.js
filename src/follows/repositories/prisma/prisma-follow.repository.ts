@@ -7,8 +7,8 @@ import { Follow } from 'src/follows/entities/follow.entity';
 export class PrismaFollowRepository implements FollowRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(followerId: string, followingId: string): Promise<void> {
-    await this.prisma.follow.create({
+  async create(followerId: string, followingId: string): Promise<Follow> {
+    return await this.prisma.follow.create({
       data: {
         follower_id: followerId,
         following_id: followingId,
@@ -16,13 +16,10 @@ export class PrismaFollowRepository implements FollowRepository {
     });
   }
 
-  async delete(followerId: string, followingId: string): Promise<void> {
+  async delete(id: string): Promise<void> {
     await this.prisma.follow.delete({
       where: {
-        follower_id_following_id: {
-          follower_id: followerId,
-          following_id: followingId,
-        },
+        id,
       },
     });
   }

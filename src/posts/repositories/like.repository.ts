@@ -11,5 +11,5 @@ export abstract class LikeRepository {
     userId: string,
     type: LikeReferenceType,
   ): Promise<Like>;
-  abstract delete(referenceId: string, userId: string): Promise<Like>;
+  abstract delete(id: string): Promise<Like>;
 }

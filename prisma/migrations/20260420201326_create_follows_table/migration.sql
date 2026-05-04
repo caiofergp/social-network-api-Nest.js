@@ -1,10 +1,12 @@
 -- CreateTable
 CREATE TABLE `follows` (
+    `id` VARCHAR(191) NOT NULL,
     `follower_id` VARCHAR(191) NOT NULL,
     `following_id` VARCHAR(191) NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
-    PRIMARY KEY (`follower_id`, `following_id`)
+    UNIQUE KEY `follower_id_following_id_key`(`follower_id`, `following_id`),
+    PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey

@@ -2,13 +2,18 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { FollowRepository } from './repositories/follow.repository';
 import { User } from 'src/auth/entities/user.entity';
 import { PrismaErrorCode } from 'src/db/prisma/prisma-erro-code';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { BaseNotificationPayload } from 'src/notifications/notifications.listener';
 
 @Injectable()
 export class FollowsService {
-  constructor(private readonly followRepository: FollowRepository) {}
+  constructor(
+    private readonly followRepository: FollowRepository,
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
 
   async follow(user: User, followingId: string) {
-    return await this.followRepository
+    const followed = await this.followRepository
       .create(user.id, followingId)
       .catch((error) => {
         if (error.code === PrismaErrorCode.uniqueConstraint) {
@@ -21,18 +26,28 @@ export class FollowsService {
 
         throw error;
       });
+
+    this.eventEmitter.emit(
+      'follow.created',
+      new BaseNotificationPayload({
+        actorId: user.id,
+        actorName: user.name,
+        recipientId: followingId,
+        referenceId: followed.id,
+      }),
+    );
+
+    return followed;
   }
 
-  async unfollow(user: User, followingId: string) {
-    return await this.followRepository
-      .delete(user.id, followingId)
-      .catch((error) => {
-        if (error.code === PrismaErrorCode.notFound) {
-          throw new BadRequestException('You are not following this user');
-        }
+  async unfollow(id: string) {
+    return await this.followRepository.delete(id).catch((error) => {
+      if (error.code === PrismaErrorCode.notFound) {
+        throw new BadRequestException('You are not following this user');
+      }
 
-        throw error;
-      });
+      throw error;
+    });
   }
 
   async getFollowers(userId: string) {

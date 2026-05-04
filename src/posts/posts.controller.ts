@@ -46,21 +46,17 @@ export class PostsController {
 
   @Post('/:id/like')
   like(@Param('id') id: string, @Req() req: Request) {
-    return this.postsService.addLike(id, req.user?.id!, LikeReferenceType.POST);
+    return this.postsService.addLike(id, req.user!, LikeReferenceType.POST);
   }
 
   @Post('/comments/:id/like')
   commentLike(@Param('id') id: string, @Req() req: Request) {
-    return this.postsService.addLike(
-      id,
-      req.user?.id!,
-      LikeReferenceType.COMMENT,
-    );
+    return this.postsService.addLike(id, req.user!, LikeReferenceType.COMMENT);
   }
 
-  @Delete('/:id/like')
-  unlike(@Param('id') id: string, @Req() req: Request) {
-    return this.postsService.deleteLike(id, req.user?.id!);
+  @Delete('/like/:id')
+  unlike(@Param('id') id: string) {
+    return this.postsService.deleteLike(id);
   }
 
   @Get('/:id/comments')
@@ -82,7 +78,7 @@ export class PostsController {
     @Body() data: CreatePostCommentDto,
     @Req() req: Request,
   ) {
-    return this.postsService.addComment(id, data, req.user?.id!);
+    return this.postsService.addComment(id, data, req.user!);
   }
 
   @Patch('/comments/:commentId')
@@ -101,7 +97,7 @@ export class PostsController {
 
   @Post('/:id/share')
   sharePost(@Param('id') id: string, @Req() req: Request) {
-    return this.postsService.sharePost(id, req.user?.id!);
+    return this.postsService.sharePost(id, req.user!);
   }
 
   @Delete('/share/:sharedId')

@@ -5,7 +5,7 @@ import { PrismaService } from 'src/db/prisma/prisma.service';
 
 type CreatePostData = Omit<
   Post,
-  'id' | 'created_at' | 'updated_at' | 'deleted_at' | 'medias'
+  'id' | 'created_at' | 'updated_at' | 'deleted_at' | 'medias' | 'user'
 >;
 
 @Injectable()
@@ -18,16 +18,17 @@ export class PrismaPostRepository implements PostRepository {
     });
   }
 
-  async findOne(id: string, options?: PostFindOptions): Promise<Post | null> {
+  async findOne(id: string, include?: PostFindOptions): Promise<Post | null> {
     return await this.prisma.db.post.findUnique({
       where: { id, deleted_at: null },
-      include: {
-        medias: !!options?.medias,
-      },
+      include,
     });
   }
 
-  async update(id: string, data: Partial<Omit<Post, 'medias'>>): Promise<Post> {
+  async update(
+    id: string,
+    data: Partial<Omit<Post, 'medias' | 'user'>>,
+  ): Promise<Post> {
     return await this.prisma.db.post.update({
       where: { id },
       data,
