@@ -1,4 +1,5 @@
 export abstract class StorageAdapter {
+  abstract getDownloadUrl(path: string): Promise<string>;
   abstract getUploadUrl(
     path: string,
     expiresIn?: number,

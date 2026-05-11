@@ -22,6 +22,25 @@ export class MinionAdapter implements StorageAdapter {
     return MinionAdapter.client;
   }
 
+  async getDownloadUrl(path: string): Promise<any> {
+    try {
+      return await this.client.presignedUrl(
+        'GET',
+        this.bucket,
+        path,
+        60 * 60 * 24 * 7,
+      );
+    } catch (error) {
+      console.error('Error getting download URL:', {
+        bucket: this.bucket,
+        path,
+        error: error.message,
+      });
+
+      throw error;
+    }
+  }
+
   async getUploadUrl(
     path: string,
     expiresIn: number = 3600,

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AuthRepository } from '../auth.repository';
+import { AuthRepository, UserWithoutRelations } from '../auth.repository';
 import { PrismaService } from 'src/db/prisma/prisma.service';
 import { User } from 'src/auth/entities/user.entity';
 import { PasswordResetToken } from 'src/auth/entities/passwordResetToken.entity';
@@ -8,20 +8,20 @@ import { PasswordResetToken } from 'src/auth/entities/passwordResetToken.entity'
 export class PrismaAuthRepository implements AuthRepository {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: Omit<User, 'id'>) {
-    return this.prisma.user.create({
+  async create(data: Omit<UserWithoutRelations, 'id'>) {
+    return await this.prisma.user.create({
       data,
     });
   }
 
   async findOne(where: Partial<User>) {
-    return this.prisma.user.findFirst({
+    return await this.prisma.user.findFirst({
       where,
     });
   }
 
-  async update(id: string, data: Partial<User>) {
-    return this.prisma.user.update({
+  async update(id: string, data: Partial<UserWithoutRelations>) {
+    return await this.prisma.user.update({
       where: { id },
       data,
     });
