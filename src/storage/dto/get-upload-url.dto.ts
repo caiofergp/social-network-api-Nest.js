@@ -1,8 +1,10 @@
 import { IsEnum, IsString } from 'class-validator';
 
 export enum StorageModel {
-  POST = 'post',
-  PROFILE = 'profile',
+  POST = 'POST',
+  PROFILE = 'PROFILE',
+  COMMENT = 'COMMENT',
+  MESSAGE = 'MESSAGE',
 }
 
 export class GetUploadUrlParamsDto {

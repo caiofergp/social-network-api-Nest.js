@@ -42,7 +42,7 @@ export class PrismaPostRepository implements PostRepository {
         deleted_at: new Date(),
         medias: {
           updateMany: {
-            where: { post_id: id, deleted_at: null },
+            where: { entity_id: id, deleted_at: null },
             data: { deleted_at: new Date() },
           },
         },

@@ -5,14 +5,22 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider     = "mysql"
+  relationMode = "prisma"
 }
 
 model User {
   id                String    @id @default(uuid())
+  avatar_id         String?   @unique
+  cover_id          String?   @unique
   email             String    @unique
   name              String
   password          String
+  bio               String?   @db.Text
+  birth_date        DateTime?
+  gender            String?
+  location          String?
+  website           String?
   token             String?   @unique
   expires_at        DateTime?
   email_verified_at DateTime?
@@ -30,6 +38,10 @@ model User {
   shareds               SharedPost[]
   notifications         Notification[]
   receivedNotifications Notification[]       @relation("receivedNotification")
+  chats                 ChatMember[]
+  sentMessages          Message[]
+  avatar                Media?               @relation("userAvatar", fields: [avatar_id], references: [id])
+  cover                 Media?               @relation("userCover", fields: [cover_id], references: [id])
 
   @@map("users")
 }
@@ -46,6 +58,7 @@ model PasswordResetToken {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
+  @@index([user_id])
   @@map("password_reset_tokens")
 }
 
@@ -60,7 +73,8 @@ model Follow {
   following          User           @relation("following", fields: [following_id], references: [id], onDelete: Cascade)
   followNotification Notification[] @relation("followNotification")
 
-  @@unique([follower_id, following_id])
+  @@unique([follower_id])
+  @@index([following_id])
   @@map("follows")
 }
 
@@ -74,29 +88,40 @@ model Post {
   deleted_at DateTime?
 
   user                 User           @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  medias               PostMedia[]
+  medias               Media[]
   likes                Like[]         @relation("postLike")
   comments             Comment[]
   shareds              SharedPost[]
   postLikeNotification Notification[] @relation("postLikeNotification")
 
+  @@index([user_id])
   @@map("posts")
 }
 
-model PostMedia {
-  id      String  @id @default(uuid())
-  post_id String
-  url     String?
-  type    String
-  path    String
+model Media {
+  id          String  @id @default(uuid())
+  user_id     String?
+  entity_type String // 'POST' | 'COMMENT' | 'MESSAGE'
+  entity_id   String?
+  type        String // 'IMAGE' | 'VIDEO' | 'DOCUMENT' | 'AVATAR' | 'COVER'
+  file_name   String?
+  mime_type   String
+  url         String?
+  path        String
+  size        Int?
+  metadata    Json?
 
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
   deleted_at DateTime?
 
-  post Post @relation(fields: [post_id], references: [id])
+  post        Post?    @relation(fields: [entity_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "media_post_entity_id_fkey")
+  message     Message? @relation(fields: [entity_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "media_message_entity_id_fkey")
+  avatarOwner User?    @relation("userAvatar")
+  coverOwner  User?    @relation("userCover")
 
-  @@map("post_media")
+  @@index([entity_id, entity_type])
+  @@map("medias")
 }
 
 model Like {
@@ -108,9 +133,10 @@ model Like {
 
   user    User    @relation(fields: [user_id], references: [id])
   post    Post    @relation("postLike", fields: [reference_id], references: [id], map: "likes_post_reference_id_fkey")
-  comment Comment @relation("commentLike", fields: [reference_id], references: [id], map: "likes_comment_reference_id_fkey")
+  comment Comment @relation("commentLike", fields: [reference_id], references: [id], map: "likes_comment_reference_id_fkey", onUpdate: NoAction, onDelete: NoAction)
 
   @@unique([reference_id, user_id])
+  @@index([user_id])
   @@map("likes")
 }
 
@@ -127,11 +153,14 @@ model Comment {
 
   user                    User           @relation(fields: [user_id], references: [id])
   post                    Post           @relation(fields: [post_id], references: [id])
-  parent                  Comment?       @relation("parent", fields: [parent_id], references: [id])
+  parent                  Comment?       @relation("parent", fields: [parent_id], references: [id], onUpdate: NoAction, onDelete: NoAction)
   children                Comment[]      @relation("parent")
   likes                   Like[]         @relation("commentLike")
   commentLikeNotification Notification[] @relation("commentLikeNotification")
 
+  @@index([user_id])
+  @@index([post_id])
+  @@index([parent_id])
   @@map("comments")
 }
 
@@ -146,6 +175,8 @@ model SharedPost {
   user              User           @relation(fields: [user_id], references: [id])
   shareNotification Notification[] @relation("shareNotification")
 
+  @@index([user_id])
+  @@index([post_id])
   @@map("shared_posts")
 }
 
@@ -168,5 +199,58 @@ model Notification {
   likedPost    Post?       @relation("postLikeNotification", fields: [reference_id], references: [id], map: "notifications_post_like_reference_id_fkey")
   sharedPost   SharedPost? @relation("shareNotification", fields: [reference_id], references: [id], map: "notifications_share_reference_id_fkey")
 
+  @@index([recipient_id])
+  @@index([actor_id])
+  @@index([reference_id, type])
   @@map("notifications")
+}
+
+model Chat {
+  id   String  @id @default(uuid())
+  name String?
+  type String // private | group
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  messages Message[]
+  members  ChatMember[]
+
+  @@map("chats")
+}
+
+model ChatMember {
+  id      String @id @default(uuid())
+  user_id String
+  chat_id String
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  user User @relation(fields: [user_id], references: [id])
+  chat Chat @relation(fields: [chat_id], references: [id])
+
+  @@unique([user_id, chat_id])
+  @@index([user_id])
+  @@index([chat_id])
+  @@map("chat_members")
+}
+
+model Message {
+  id        String  @id @default(uuid())
+  sender_id String
+  chat_id   String
+  content   String?
+
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+
+  user   User    @relation(fields: [sender_id], references: [id])
+  chat   Chat    @relation(fields: [chat_id], references: [id])
+  medias Media[]
+
+  @@index([sender_id])
+  @@index([chat_id])
+  @@map("messages")
 }

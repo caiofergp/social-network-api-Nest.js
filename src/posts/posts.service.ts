@@ -6,11 +6,11 @@ import {
 } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { PostRepository } from './repositories/post.repository';
-import { PostMediaRepository } from './repositories/post-media.repository';
+import { MediaRepository } from 'src/medias/repositories/media.repository';
 import { StorageAdapter } from 'src/adapters/storage/storage.adapter';
 import { UnitOfWork } from 'src/db/unit-of-work';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { PostMedia } from './entities/post-media.entity';
+import { Media } from 'src/medias/entities/media.entity';
 import {
   LikeReferenceType,
   LikeRepository,
@@ -29,7 +29,7 @@ import { BaseNotificationPayload } from 'src/notifications/notifications.listene
 export class PostsService {
   constructor(
     private readonly postRepository: PostRepository,
-    private readonly postMediaRepository: PostMediaRepository,
+    private readonly mediaRepository: MediaRepository,
     private readonly storageAdapter: StorageAdapter,
     private readonly unitOfWork: UnitOfWork,
     private readonly likeRepository: LikeRepository,
@@ -61,14 +61,14 @@ export class PostsService {
           );
 
           return {
-            media: { ...media, path: newPath, post_id: createdPost.id },
+            media: { ...media, path: newPath, entity_id: createdPost.id, entity_type: 'POST', user_id: userId },
             oldPath: media.path,
             newPath,
           };
         });
 
-        const createdMedias = await this.postMediaRepository.createMany(
-          mediaWithPaths.map((m) => m.media),
+        const createdMedias = await this.mediaRepository.createMany(
+          mediaWithPaths.map((m) => m.media as Media),
         );
 
         await Promise.all(
@@ -99,7 +99,7 @@ export class PostsService {
 
     return await this.unitOfWork.runInTransaction(async () => {
       let updatedPost = post;
-      let mediasToDelete: PostMedia[] = [];
+      let mediasToDelete: Media[] = [];
 
       if (postData) {
         updatedPost = await this.postRepository.update(postId, postData);
@@ -109,18 +109,18 @@ export class PostsService {
         const mediaWithIds = medias.filter((m) => !!m.id);
         const mediaWithoutIds = medias.filter((m) => !m.id);
 
-        mediasToDelete = await this.postMediaRepository.findByIdNotIn(
+        mediasToDelete = await this.mediaRepository.findByIdNotIn(
           mediaWithIds.map((m) => m.id!),
           postId,
         );
 
         if (mediasToDelete.length) {
-          await this.postMediaRepository.deleteMany(
+          await this.mediaRepository.deleteMany(
             mediasToDelete.map((m) => m.id),
           );
         }
 
-        let createdMedias: PostMedia[] = [];
+        let createdMedias: Media[] = [];
 
         if (mediaWithoutIds.length) {
           const mediaWithPaths = mediaWithoutIds.map((media) => {
@@ -130,14 +130,14 @@ export class PostsService {
             );
 
             return {
-              media: { ...media, path: newPath, post_id: post.id },
+              media: { ...media, path: newPath, entity_id: post.id, entity_type: 'POST', user_id: userId },
               oldPath: media.path,
               newPath,
             };
           });
 
-          createdMedias = await this.postMediaRepository.createMany(
-            mediaWithPaths.map((m) => m.media),
+          createdMedias = await this.mediaRepository.createMany(
+            mediaWithPaths.map((m) => m.media as Media),
           );
 
           await Promise.all(

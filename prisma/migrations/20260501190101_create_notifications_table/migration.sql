@@ -20,3 +20,6 @@ ALTER TABLE `notifications` ADD CONSTRAINT `notifications_actor_id_fkey` FOREIGN
 
 -- AddForeignKey
 ALTER TABLE `notifications` ADD CONSTRAINT `notifications_recipient_id_fkey` FOREIGN KEY (`recipient_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- CreateIndex
+CREATE INDEX `notifications_reference_id_type_idx` ON `notifications`(`reference_id`, `type`);
