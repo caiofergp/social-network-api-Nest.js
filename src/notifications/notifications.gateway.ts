@@ -4,6 +4,8 @@ import {
   OnGatewayConnection,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { JwtAdapter } from 'src/adapters/jwt/jwt.dapter';
+import { authSocket } from 'src/common/utils/auth-socket';
 
 type NotificationPayload = {
   recipient_id: string;
@@ -13,17 +15,20 @@ type NotificationPayload = {
   content: string;
 };
 
-@WebSocketGateway({ cors: { origin: '*' } })
+@WebSocketGateway({
+  namespace: '/notifications',
+  cors: { origin: '*' },
+})
 export class NotificationsGateway implements OnGatewayConnection {
   @WebSocketServer() server: Server;
 
-  sendToUser(userId: string, payload: NotificationPayload) {
-    this.server.to(`user_${userId}`).emit('notification', payload);
+  constructor(private readonly jwtAdapter: JwtAdapter) {}
+
+  async handleConnection(client: Socket) {
+    return authSocket(client, this.jwtAdapter);
   }
 
-  handleConnection(client: Socket) {
-    const userId = client.handshake.query.userId;
-
-    if (userId) client.join(`user_${userId}`);
+  sendToUser(userId: string, payload: NotificationPayload) {
+    this.server.to(`user_${userId}`).emit('notification', payload);
   }
 }

@@ -21,6 +21,7 @@ enum NotificationType {
   COMMENT = 'comment',
   SHARE = 'share',
   FOLLOW = 'follow',
+  CHAT = 'chat',
 }
 
 @Injectable()
@@ -78,6 +79,17 @@ export class NotificationsListener {
       recipient_id: payload.recipientId,
       type: NotificationType.FOLLOW,
       content: `${payload.actorName} started following you!`,
+      reference_id: payload.referenceId,
+    });
+  }
+
+  @OnEvent('chat.message.created')
+  async handleMessageCreated(payload: BaseNotificationPayload) {
+    await this.notificationsService.create({
+      actor_id: payload.actorId,
+      recipient_id: payload.recipientId,
+      type: NotificationType.CHAT,
+      content: `${payload.actorName} sent you a message!`,
       reference_id: payload.referenceId,
     });
   }
