@@ -7,7 +7,7 @@ import { SignUpDto } from './dto/sign-up.dto';
 import { AuthRepository } from './repositories/auth.repository';
 import { HashAdapter } from '../adapters/hash/hash.adapter';
 import { SignInDto } from './dto/sign-in.dto';
-import { JwtAdapter } from 'src/adapters/jwt/jwt.adapter';
+import { JwtService } from '@nestjs/jwt';
 import { MailService } from 'src/mail/mail.service';
 import * as crypto from 'crypto';
 import { DateManagerAdapter } from 'src/adapters/date-manager/date-manager.adapter';
@@ -21,7 +21,7 @@ export class AuthService {
     private authRepository: AuthRepository,
     private passwordResetTokenRepository: PasswordResetTokenRepository,
     private hashAdapter: HashAdapter,
-    private jwtAdapter: JwtAdapter,
+    private jwtService: JwtService,
     private mailService: MailService,
     private dateManager: DateManagerAdapter,
   ) {}
@@ -48,7 +48,7 @@ export class AuthService {
       throw new BadRequestException('Invalid password');
     }
 
-    const token = await this.jwtAdapter.generateToken({ id: user.id });
+    const token = await this.jwtService.signAsync({ id: user.id });
 
     return token;
   }

@@ -4,7 +4,7 @@ import {
   OnGatewayConnection,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { JwtAdapter } from 'src/adapters/jwt/jwt.adapter';
+import { JwtService } from '@nestjs/jwt';
 import { authSocket } from 'src/common/utils/auth-socket';
 
 type NotificationPayload = {
@@ -22,10 +22,10 @@ type NotificationPayload = {
 export class NotificationsGateway implements OnGatewayConnection {
   @WebSocketServer() server: Server;
 
-  constructor(private readonly jwtAdapter: JwtAdapter) {}
+  constructor(private readonly jwtService: JwtService) {}
 
   async handleConnection(client: Socket) {
-    return authSocket(client, this.jwtAdapter);
+    return authSocket(client, this.jwtService);
   }
 
   sendToUser(userId: string, payload: NotificationPayload) {

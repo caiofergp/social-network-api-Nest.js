@@ -1,12 +1,12 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Request } from 'express';
-import { JwtAdapter } from 'src/adapters/jwt/jwt.adapter';
+import { JwtService } from '@nestjs/jwt';
 import { AuthRepository } from 'src/auth/repositories/auth.repository';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
-    private readonly jwtAdapter: JwtAdapter,
+    private readonly jwtService: JwtService,
     private readonly authRepository: AuthRepository,
   ) {}
 
@@ -20,7 +20,7 @@ export class AuthGuard implements CanActivate {
     }
 
     const decodedToken: { id: string } =
-      await this.jwtAdapter.verifyToken(token);
+      await this.jwtService.verifyAsync(token);
     const user = await this.authRepository.findOne({ id: decodedToken.id });
 
     if (!user) {

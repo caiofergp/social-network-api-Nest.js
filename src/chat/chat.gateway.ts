@@ -7,7 +7,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { JwtAdapter } from 'src/adapters/jwt/jwt.adapter';
+import { JwtService } from '@nestjs/jwt';
 import { ChatService } from './chat.service';
 import { Message } from './entities/message.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -37,11 +37,11 @@ export class ChatGateway implements OnGatewayConnection {
     private readonly chatService: ChatService,
     private readonly eventEmitter: EventEmitter2,
     private readonly unitOfWork: UnitOfWork,
-    private readonly jwtAdapter: JwtAdapter,
+    private readonly jwtService: JwtService,
   ) {}
 
   async handleConnection(client: Socket) {
-    return await authSocket(client, this.jwtAdapter);
+    return await authSocket(client, this.jwtService);
   }
 
   @SubscribeMessage('message')

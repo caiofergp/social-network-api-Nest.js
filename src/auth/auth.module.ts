@@ -8,8 +8,6 @@ import { PrismaAuthRepository } from './repositories/prisma/prisma-auth.reposito
 import { AuthRepository } from './repositories/auth.repository';
 import { HashAdapter } from '../adapters/hash/hash.adapter';
 import { BcryptAdapter } from '../adapters/hash/bcrypt.adapter';
-import { JwtAdapter } from '../adapters/jwt/jwt.adapter';
-import { JsonwebtokenAdapter } from '../adapters/jwt/jsonwebtoken.adapter';
 import { MailModule } from 'src/mail/mail.module';
 import { DateManagerAdapter } from '../adapters/date-manager/date-manager.adapter';
 import { DateFnsAdapter } from '../adapters/date-manager/date-fns.adapter';
@@ -17,6 +15,7 @@ import { AuthCleanupService } from './auth-cleanup.service';
 import { AuthCleanupProcessor } from './auth-cleanup.processor';
 import { PasswordResetTokenRepository } from './repositories/password-reset-token.repository';
 import { PrismaPasswordResetTokenRepository } from './repositories/prisma/prisma-password-reset-token.repository';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -27,6 +26,11 @@ import { PrismaPasswordResetTokenRepository } from './repositories/prisma/prisma
     BullBoardModule.forFeature({
       name: 'auth_cleanup_queue',
       adapter: BullMQAdapter,
+    }),
+    JwtModule.register({
+      global: true,
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '7d' },
     }),
   ],
   controllers: [AuthController],
@@ -40,7 +44,6 @@ import { PrismaPasswordResetTokenRepository } from './repositories/prisma/prisma
       useClass: PrismaPasswordResetTokenRepository,
     },
     { provide: HashAdapter, useClass: BcryptAdapter },
-    { provide: JwtAdapter, useClass: JsonwebtokenAdapter },
     { provide: DateManagerAdapter, useClass: DateFnsAdapter },
   ],
   exports: [
@@ -49,7 +52,7 @@ import { PrismaPasswordResetTokenRepository } from './repositories/prisma/prisma
       provide: PasswordResetTokenRepository,
       useClass: PrismaPasswordResetTokenRepository,
     },
-    { provide: JwtAdapter, useClass: JsonwebtokenAdapter },
+    JwtModule,
   ],
 })
 export class AuthModule {}

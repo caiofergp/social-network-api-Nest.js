@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
 import { ChatGateway } from './chat.gateway';
-import { JwtAdapter } from '../adapters/jwt/jwt.adapter';
-import { JsonwebtokenAdapter } from '../adapters/jwt/jsonwebtoken.adapter';
 import { ChatService } from './chat.service';
 import { MessageRepository } from './repositories/message.repository';
 import { PrismaMessageRepository } from './repositories/prisma/prisma-message.repository';
@@ -22,7 +20,6 @@ import { PrismaUnitOfWork } from 'src/db/prisma/prisma-unit-of-work';
   providers: [
     ChatGateway,
     ChatService,
-    { provide: JwtAdapter, useClass: JsonwebtokenAdapter },
     { provide: MessageRepository, useClass: PrismaMessageRepository },
     { provide: ChatRepository, useClass: PrismaChatRepository },
     { provide: MediaRepository, useClass: PrismaMediaRepository },
