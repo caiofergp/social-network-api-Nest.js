@@ -30,7 +30,7 @@ export class PostsController {
     return this.postsService.create(createPostDto, req.user?.id!);
   }
 
-  @Patch('/:id')
+  @Patch(':id')
   update(
     @Param('id') id: string,
     @Body() updatePostDto: UpdatePostDto,
@@ -39,32 +39,32 @@ export class PostsController {
     return this.postsService.update(updatePostDto, id, req.user?.id!);
   }
 
-  @Delete('/:id')
+  @Delete(':id')
   delete(@Param('id') id: string, @Req() req: Request) {
     return this.postsService.delete(id, req.user?.id!);
   }
 
-  @Post('/:id/like')
+  @Post(':id/like')
   like(@Param('id') id: string, @Req() req: Request) {
     return this.postsService.addLike(id, req.user!, LikeReferenceType.POST);
   }
 
-  @Post('/comments/:id/like')
+  @Post('comments/:id/like')
   commentLike(@Param('id') id: string, @Req() req: Request) {
     return this.postsService.addLike(id, req.user!, LikeReferenceType.COMMENT);
   }
 
-  @Delete('/like/:id')
+  @Delete('like/:id')
   unlike(@Param('id') id: string) {
     return this.postsService.deleteLike(id);
   }
 
-  @Get('/:id/comments')
+  @Get(':id/comments')
   getComments(@Param('id') id: string, @Query() query: PaginationDto) {
     return this.postsService.getPostComments(id, query);
   }
 
-  @Get('/comments/:commentId/children')
+  @Get('comments/:commentId/children')
   getCommentsChildren(
     @Param('commentId') commentId: string,
     @Query() query: PaginationDto,
@@ -72,7 +72,7 @@ export class PostsController {
     return this.postsService.getPostCommentsChildren(commentId, query);
   }
 
-  @Post('/:id/comments')
+  @Post(':id/comments')
   addComment(
     @Param('id') id: string,
     @Body() data: CreatePostCommentDto,
@@ -81,7 +81,7 @@ export class PostsController {
     return this.postsService.addComment(id, data, req.user!);
   }
 
-  @Patch('/comments/:commentId')
+  @Patch('comments/:commentId')
   updateComment(
     @Param('commentId') commentId: string,
     @Body() data: UpdatePostCommentDto,
@@ -90,17 +90,17 @@ export class PostsController {
     return this.postsService.updateComment(commentId, data, req.user?.id!);
   }
 
-  @Delete('/comments/:commentId')
+  @Delete('comments/:commentId')
   deleteComment(@Param('commentId') commentId: string, @Req() req: Request) {
     return this.postsService.deleteComment(commentId, req.user?.id!);
   }
 
-  @Post('/:id/share')
+  @Post(':id/share')
   sharePost(@Param('id') id: string, @Req() req: Request) {
     return this.postsService.sharePost(id, req.user!);
   }
 
-  @Delete('/share/:sharedId')
+  @Delete('share/:sharedId')
   unsharePost(@Param('sharedId') sharedId: string, @Req() req: Request) {
     return this.postsService.unsharePost(sharedId, req.user?.id!);
   }

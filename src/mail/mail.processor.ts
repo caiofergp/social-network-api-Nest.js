@@ -1,10 +1,10 @@
 import { Processor, WorkerHost, OnWorkerEvent } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 import { User } from 'src/auth/entities/user.entity';
-import { MailerAdapter } from 'src/adapters/mailer/mailer.dapter';
-import { confirmAccountTemplate } from './templates/confirmAccount.template';
-import { DateManagerAdapter } from 'src/adapters/dateManager/dateManager.adapter';
-import { resetPasswordTemplate } from './templates/resetPassword.template';
+import { MailerAdapter } from 'src/adapters/mailer/mailer.adapter';
+import { confirmAccountTemplate } from './templates/confirm-account.template';
+import { DateManagerAdapter } from 'src/adapters/date-manager/date-manager.adapter';
+import { resetPasswordTemplate } from './templates/reset-password.template';
 
 @Processor('mail_queue')
 export class MailProcessor extends WorkerHost {

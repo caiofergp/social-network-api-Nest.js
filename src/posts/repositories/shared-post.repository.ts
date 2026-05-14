@@ -1,4 +1,4 @@
-import { SharedPost } from '../entities/shared-post';
+import { SharedPost } from '../entities/shared-post.entity';
 
 export abstract class SharedPostRepository {
   abstract create(user_id: string, post_id: string): Promise<SharedPost>;

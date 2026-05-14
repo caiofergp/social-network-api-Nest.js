@@ -1,4 +1,4 @@
-import { MailerAdapter } from './mailer.dapter';
+import { MailerAdapter } from './mailer.adapter';
 import nodemailer from 'nodemailer';
 
 export class NodemailerAdapter implements MailerAdapter {

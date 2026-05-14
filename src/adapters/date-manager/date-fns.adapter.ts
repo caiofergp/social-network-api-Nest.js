@@ -1,4 +1,4 @@
-import { DateManagerAdapter } from './dateManager.adapter';
+import { DateManagerAdapter } from './date-manager.adapter';
 import { addDays, format as formatDate, addHours } from 'date-fns';
 
 export class DateFnsAdapter implements DateManagerAdapter {

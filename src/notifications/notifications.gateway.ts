@@ -4,7 +4,7 @@ import {
   OnGatewayConnection,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { JwtAdapter } from 'src/adapters/jwt/jwt.dapter';
+import { JwtAdapter } from 'src/adapters/jwt/jwt.adapter';
 import { authSocket } from 'src/common/utils/auth-socket';
 
 type NotificationPayload = {

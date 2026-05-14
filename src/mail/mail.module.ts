@@ -4,10 +4,10 @@ import { MailProcessor } from './mail.processor';
 import { BullBoardModule } from '@bull-board/nestjs';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
 import { BullModule } from '@nestjs/bullmq';
-import { MailerAdapter } from 'src/adapters/mailer/mailer.dapter';
+import { MailerAdapter } from 'src/adapters/mailer/mailer.adapter';
 import { NodemailerAdapter } from 'src/adapters/mailer/nodemailer.adapter';
-import { DateManagerAdapter } from 'src/adapters/dateManager/dateManager.adapter';
-import { DateFnsAdapter } from 'src/adapters/dateManager/dateFns.adapter';
+import { DateManagerAdapter } from 'src/adapters/date-manager/date-manager.adapter';
+import { DateFnsAdapter } from 'src/adapters/date-manager/date-fns.adapter';
 
 @Module({
   imports: [

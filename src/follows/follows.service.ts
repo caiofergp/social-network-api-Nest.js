@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { FollowRepository } from './repositories/follow.repository';
 import { User } from 'src/auth/entities/user.entity';
-import { PrismaErrorCode } from 'src/db/prisma/prisma-erro-code';
+import { PrismaErrorCode } from 'src/db/prisma/prisma-error-code';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { BaseNotificationPayload } from 'src/notifications/notifications.listener';
 

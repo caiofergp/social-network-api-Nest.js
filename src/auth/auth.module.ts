@@ -8,11 +8,11 @@ import { PrismaAuthRepository } from './repositories/prisma/prisma-auth.reposito
 import { AuthRepository } from './repositories/auth.repository';
 import { HashAdapter } from '../adapters/hash/hash.adapter';
 import { BcryptAdapter } from '../adapters/hash/bcrypt.adapter';
-import { JwtAdapter } from 'src/adapters/jwt/jwt.dapter';
-import { JsonwebtokenAdapter } from 'src/adapters/jwt/jsonwebtoken.dapter';
+import { JwtAdapter } from '../adapters/jwt/jwt.adapter';
+import { JsonwebtokenAdapter } from '../adapters/jwt/jsonwebtoken.adapter';
 import { MailModule } from 'src/mail/mail.module';
-import { DateManagerAdapter } from 'src/adapters/dateManager/dateManager.adapter';
-import { DateFnsAdapter } from 'src/adapters/dateManager/dateFns.adapter';
+import { DateManagerAdapter } from '../adapters/date-manager/date-manager.adapter';
+import { DateFnsAdapter } from '../adapters/date-manager/date-fns.adapter';
 import { AuthCleanupService } from './auth-cleanup.service';
 import { AuthCleanupProcessor } from './auth-cleanup.processor';
 import { PasswordResetTokenRepository } from './repositories/password-reset-token.repository';

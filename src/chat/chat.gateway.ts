@@ -7,7 +7,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { JwtAdapter } from 'src/adapters/jwt/jwt.dapter';
+import { JwtAdapter } from 'src/adapters/jwt/jwt.adapter';
 import { ChatService } from './chat.service';
 import { Message } from './entities/message.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';

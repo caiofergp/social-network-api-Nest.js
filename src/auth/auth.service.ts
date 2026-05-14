@@ -6,13 +6,13 @@ import {
 import { SignUpDto } from './dto/sign-up.dto';
 import { AuthRepository } from './repositories/auth.repository';
 import { HashAdapter } from '../adapters/hash/hash.adapter';
-import { SignInDto } from './dto/sign-In.dto';
-import { JwtAdapter } from 'src/adapters/jwt/jwt.dapter';
+import { SignInDto } from './dto/sign-in.dto';
+import { JwtAdapter } from 'src/adapters/jwt/jwt.adapter';
 import { MailService } from 'src/mail/mail.service';
 import * as crypto from 'crypto';
-import { DateManagerAdapter } from 'src/adapters/dateManager/dateManager.adapter';
-import { resetPasswordTemplate } from '../templates/resetPasswordForm.template';
-import { accountConfirmPageTemplate } from 'src/templates/accountConfirmPageTemplate';
+import { DateManagerAdapter } from 'src/adapters/date-manager/date-manager.adapter';
+import { resetPasswordFormTemplate } from '../templates/reset-password-form.template';
+import { accountConfirmPageTemplate } from 'src/templates/account-confirm-page.template';
 import { PasswordResetTokenRepository } from './repositories/password-reset-token.repository';
 
 @Injectable()
@@ -174,13 +174,13 @@ export class AuthService {
     }
 
     if (passwordResetToken.expires_at < this.dateManager.now()) {
-      return resetPasswordTemplate(token, false);
+      return resetPasswordFormTemplate(token, false);
     }
 
     if (passwordResetToken.used_at) {
-      return resetPasswordTemplate(token, false);
+      return resetPasswordFormTemplate(token, false);
     }
 
-    return resetPasswordTemplate(token);
+    return resetPasswordFormTemplate(token);
   }
 }

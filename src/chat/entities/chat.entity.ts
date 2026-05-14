@@ -1,4 +1,4 @@
-import { ChatMember } from './chat-members.entity';
+import { ChatMember } from './chat-member.entity';
 import { Message } from './message.entity';
 
 export enum ChatType {

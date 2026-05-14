@@ -1,4 +1,4 @@
-import { GenerateTokenOptions, JwtAdapter } from './jwt.dapter';
+import { GenerateTokenOptions, JwtAdapter } from './jwt.adapter';
 import jwt from 'jsonwebtoken';
 
 export class JsonwebtokenAdapter implements JwtAdapter {

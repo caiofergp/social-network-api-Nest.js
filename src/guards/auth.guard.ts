@@ -1,6 +1,6 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Request } from 'express';
-import { JwtAdapter } from 'src/adapters/jwt/jwt.dapter';
+import { JwtAdapter } from 'src/adapters/jwt/jwt.adapter';
 import { AuthRepository } from 'src/auth/repositories/auth.repository';
 
 @Injectable()

@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { MessageRepository } from './repositiories/message.repository';
-import { ChatRepository } from './repositiories/chat.repository';
+import { MessageRepository } from './repositories/message.repository';
+import { ChatRepository } from './repositories/chat.repository';
 import { MediaRepository } from 'src/medias/repositories/media.repository';
 import { StorageAdapter } from 'src/adapters/storage/storage.adapter';
 import { Media } from 'src/medias/entities/media.entity';

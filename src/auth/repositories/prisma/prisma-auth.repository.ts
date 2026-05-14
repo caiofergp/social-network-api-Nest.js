@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { AuthRepository, UserWithoutRelations } from '../auth.repository';
 import { PrismaService } from 'src/db/prisma/prisma.service';
 import { User } from 'src/auth/entities/user.entity';
-import { PasswordResetToken } from 'src/auth/entities/passwordResetToken.entity';
+import { PasswordResetToken } from 'src/auth/entities/password-reset-token.entity';
 
 @Injectable()
 export class PrismaAuthRepository implements AuthRepository {

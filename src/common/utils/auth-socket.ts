@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io';
-import { JwtAdapter } from 'src/adapters/jwt/jwt.dapter';
+import { JwtAdapter } from 'src/adapters/jwt/jwt.adapter';
 import * as cookie from 'cookie';
 
 export const authSocket = async (client: Socket, jwtAdapter: JwtAdapter) => {

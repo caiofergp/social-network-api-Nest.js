@@ -1,7 +1,7 @@
 import { Comment } from 'src/posts/entities/comment.entity';
 import { Follow } from 'src/follows/entities/follow.entity';
 import { Post } from 'src/posts/entities/post.entity';
-import { SharedPost } from 'src/posts/entities/shared-post';
+import { SharedPost } from 'src/posts/entities/shared-post.entity';
 import { User } from 'src/auth/entities/user.entity';
 
 export enum NotificationType {

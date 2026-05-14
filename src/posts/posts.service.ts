@@ -21,7 +21,7 @@ import { UpdatePostCommentDto } from './dto/update-post-comment.dto';
 import { PaginationDto } from '../db/dto/pagination.dto';
 import { SharedPostRepository } from './repositories/shared-post.repository';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { PrismaErrorCode } from 'src/db/prisma/prisma-erro-code';
+import { PrismaErrorCode } from 'src/db/prisma/prisma-error-code';
 import { User } from 'src/auth/entities/user.entity';
 import { BaseNotificationPayload } from 'src/notifications/notifications.listener';
 

@@ -9,12 +9,12 @@ import type { Request } from 'express';
 export class FeedController {
   constructor(private readonly feedService: FeedService) {}
 
-  @Get('/followed-user-posts')
+  @Get('following')
   getFollowedUserPosts(@Req() req: Request, @Query() query: PaginationDto) {
     return this.feedService.getFollowedUserPosts(req.user!.id, query);
   }
 
-  @Get('/recommended')
+  @Get('recommended')
   getRecommendedFeed(@Req() req: Request, @Query() query: PaginationDto) {
     return this.feedService.getRecommendedFeed(req.user!.id, query);
   }

@@ -1,4 +1,4 @@
-import { SharedPost } from 'src/posts/entities/shared-post';
+import { SharedPost } from 'src/posts/entities/shared-post.entity';
 import { SharedPostRepository } from '../shared-post.repository';
 import { PrismaService } from 'src/db/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';

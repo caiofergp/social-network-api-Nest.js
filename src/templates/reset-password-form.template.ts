@@ -3,7 +3,7 @@ dotenv.config();
 
 const APP_URL = process.env.APP_URL!;
 
-export const resetPasswordTemplate = (
+export const resetPasswordFormTemplate = (
   token: string,
   tokenIsValid: boolean = true,
 ) => {
