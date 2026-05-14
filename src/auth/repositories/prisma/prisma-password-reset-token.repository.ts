@@ -4,9 +4,7 @@ import { PasswordResetToken } from 'src/auth/entities/passwordResetToken.entity'
 import { PasswordResetTokenRepository } from '../password-reset-token.repository';
 
 @Injectable()
-export class PrismaPasswordResetTokenRepository
-  implements PasswordResetTokenRepository
-{
+export class PrismaPasswordResetTokenRepository implements PasswordResetTokenRepository {
   constructor(private prisma: PrismaService) {}
 
   async create(data: Omit<PasswordResetToken, 'id'>) {

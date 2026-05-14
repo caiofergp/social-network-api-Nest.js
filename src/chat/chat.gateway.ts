@@ -85,7 +85,7 @@ export class ChatGateway implements OnGatewayConnection {
               actorId: senderId,
               recipientId: member?.user?.id!,
               referenceId: chat.id,
-              actorName: sender!.user?.name!,
+              actorName: sender.user?.name!,
             }),
           );
 

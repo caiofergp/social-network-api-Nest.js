@@ -16,9 +16,12 @@ import { CommentRepository } from './repositories/comment.repository';
 import { PrismaCommentRepository } from './repositories/prisma/prisma-comment.repository';
 import { SharedPostRepository } from './repositories/shared-post.repository';
 import { PrismaSharedPostRepository } from './repositories/prisma/prisma-shared-post.repository';
+import { FeedRepository } from './feed/repositories/feed.repository';
+import { PrismaFeedRepository } from './feed/repositories/prisma/prisma-feed.repository';
+import { FeedModule } from './feed/feed.module';
 
 @Module({
-  imports: [AuthModule, PrismaModule],
+  imports: [AuthModule, PrismaModule, FeedModule],
   controllers: [PostsController],
   providers: [
     PostsService,
@@ -28,6 +31,7 @@ import { PrismaSharedPostRepository } from './repositories/prisma/prisma-shared-
     { provide: LikeRepository, useClass: PrismaLikeRepository },
     { provide: CommentRepository, useClass: PrismaCommentRepository },
     { provide: SharedPostRepository, useClass: PrismaSharedPostRepository },
+    { provide: FeedRepository, useClass: PrismaFeedRepository },
   ],
 })
 export class PostsModule {}

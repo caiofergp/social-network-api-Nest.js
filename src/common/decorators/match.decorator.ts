@@ -1,14 +1,25 @@
-import { registerDecorator, ValidationArguments, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface } from "class-validator";
+import {
+  registerDecorator,
+  ValidationArguments,
+  ValidationOptions,
+  ValidatorConstraint,
+  ValidatorConstraintInterface,
+} from 'class-validator';
 
 @ValidatorConstraint({ name: 'Match' })
 export class MatchConstraint implements ValidatorConstraintInterface {
-  validate(value: any, validationArguments?: ValidationArguments): Promise<boolean> | boolean {
+  validate(
+    value: any,
+    validationArguments?: ValidationArguments,
+  ): Promise<boolean> | boolean {
     if (!validationArguments) {
       return false;
     }
 
     const [relatedPropertyName] = validationArguments.constraints;
-    const relatedValue = (validationArguments.object as any)[relatedPropertyName];
+    const relatedValue = (validationArguments.object as any)[
+      relatedPropertyName
+    ];
     return value === relatedValue;
   }
 

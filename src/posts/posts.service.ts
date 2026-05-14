@@ -61,7 +61,13 @@ export class PostsService {
           );
 
           return {
-            media: { ...media, path: newPath, entity_id: createdPost.id, entity_type: 'POST', user_id: userId },
+            media: {
+              ...media,
+              path: newPath,
+              entity_id: createdPost.id,
+              entity_type: 'POST',
+              user_id: userId,
+            },
             oldPath: media.path,
             newPath,
           };
@@ -130,7 +136,13 @@ export class PostsService {
             );
 
             return {
-              media: { ...media, path: newPath, entity_id: post.id, entity_type: 'POST', user_id: userId },
+              media: {
+                ...media,
+                path: newPath,
+                entity_id: post.id,
+                entity_type: 'POST',
+                user_id: userId,
+              },
               oldPath: media.path,
               newPath,
             };
