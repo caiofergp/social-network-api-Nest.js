@@ -1,5 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ChatsController } from './chats.controller';
+import { ChatsService } from './chats.service';
+import { AuthGuard } from 'src/guards/auth.guard';
 
 describe('ChatsController', () => {
   let controller: ChatsController;
@@ -7,7 +9,13 @@ describe('ChatsController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ChatsController],
-    }).compile();
+      providers: [
+        { provide: ChatsService, useValue: {} },
+      ],
+    })
+      .overrideGuard(AuthGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
 
     controller = module.get<ChatsController>(ChatsController);
   });

@@ -1,12 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotificationsGateway } from './notifications.gateway';
+import { JwtService } from '@nestjs/jwt';
 
 describe('NotificationsGateway', () => {
   let gateway: NotificationsGateway;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [NotificationsGateway],
+      providers: [
+        NotificationsGateway,
+        { provide: JwtService, useValue: {} },
+      ],
     }).compile();
 
     gateway = module.get<NotificationsGateway>(NotificationsGateway);
