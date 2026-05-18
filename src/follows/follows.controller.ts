@@ -26,13 +26,13 @@ export class FollowsController {
     return this.followsService.getFollowing(userId);
   }
 
-  @Post('follow/:followingId')
-  follow(@Req() req: Request, @Param('followingId') followingId: string) {
-    return this.followsService.follow(req.user!, followingId);
+  @Post(':userId')
+  follow(@Req() req: Request, @Param('userId') userId: string) {
+    return this.followsService.follow(req.user!, userId);
   }
 
-  @Delete('unfollow/:id')
-  unfollow(@Param('id') id: string) {
-    return this.followsService.unfollow(id);
+  @Delete(':userId')
+  unfollow(@Param('userId') userId: string) {
+    return this.followsService.unfollow(userId);
   }
 }

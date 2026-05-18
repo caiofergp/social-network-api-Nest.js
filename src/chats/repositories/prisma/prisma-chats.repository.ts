@@ -1,11 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Chat, ChatType } from 'src/chat/entities/chat.entity';
-import { ChatRepository, ChatRepositoryOptions } from '../chat.repository';
+import { Chat, ChatType } from 'src/chats/entities/chat.entity';
+import { ChatsRepository, ChatsRepositoryOptions } from '../chats.repository';
 import { PrismaService } from 'src/db/prisma/prisma.service';
 import { PaginationDto } from 'src/db/dto/pagination.dto';
 
 @Injectable()
-export class PrismaChatRepository implements ChatRepository {
+export class PrismaChatsRepository implements ChatsRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async createPrivateChat(
@@ -63,7 +63,7 @@ export class PrismaChatRepository implements ChatRepository {
 
   async getChatById(
     chatId: string,
-    options?: ChatRepositoryOptions,
+    options?: ChatsRepositoryOptions,
   ): Promise<Chat | null> {
     return await this.prisma.db.chat.findUnique({
       where: {

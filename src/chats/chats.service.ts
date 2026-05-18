@@ -1,16 +1,16 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { MessageRepository } from './repositories/message.repository';
-import { ChatRepository } from './repositories/chat.repository';
+import { ChatsRepository } from './repositories/chats.repository';
 import { MediaRepository } from 'src/medias/repositories/media.repository';
 import { StorageAdapter } from 'src/adapters/storage/storage.adapter';
 import { Media } from 'src/medias/entities/media.entity';
 import { UnitOfWork } from 'src/db/unit-of-work';
 
 @Injectable()
-export class ChatService {
+export class ChatsService {
   constructor(
     private readonly messageRepository: MessageRepository,
-    private readonly chatRepository: ChatRepository,
+    private readonly chatsRepository: ChatsRepository,
     private readonly mediaRepository: MediaRepository,
     private readonly storageAdapter: StorageAdapter,
     private readonly unitOfWork: UnitOfWork,
@@ -81,23 +81,23 @@ export class ChatService {
   }
 
   async createPrivateChat(participant1Id: string, participant2Id: string) {
-    return await this.chatRepository.createPrivateChat(
+    return await this.chatsRepository.createPrivateChat(
       participant1Id,
       participant2Id,
     );
   }
 
   async createGroupChat(membersId: string[], name: string) {
-    return await this.chatRepository.createGroupChat(membersId, name);
+    return await this.chatsRepository.createGroupChat(membersId, name);
   }
 
   async getChatById(chatId: string, offset = 0, limit = 20) {
-    return await this.chatRepository.getChatById(chatId, {
+    return await this.chatsRepository.getChatById(chatId, {
       message: { offset, limit },
     });
   }
 
   async getUserChats(userId: string, offset = 0, limit = 20) {
-    return await this.chatRepository.getUserChats(userId, offset, limit);
+    return await this.chatsRepository.getUserChats(userId, offset, limit);
   }
 }

@@ -14,7 +14,7 @@ import { PostsModule } from './posts/posts.module';
 import { StorageModule } from './storage/storage.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { NotificationsModule } from './notifications/notifications.module';
-import { ChatModule } from './chat/chat.module';
+import { ChatsModule } from './chats/chats.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -52,7 +52,7 @@ import { UsersModule } from './users/users.module';
     PostsModule,
     StorageModule,
     NotificationsModule,
-    ChatModule,
+    ChatsModule,
     UsersModule,
   ],
   controllers: [AppController],

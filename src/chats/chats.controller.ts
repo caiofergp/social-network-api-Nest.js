@@ -8,7 +8,7 @@ import {
   Query,
   Req,
 } from '@nestjs/common';
-import { ChatService } from './chat.service';
+import { ChatsService } from './chats.service';
 import { PaginationDto } from 'src/db/dto/pagination.dto';
 import { CreateDirectChatDto } from './dto/create-direct-chat.dto';
 import { AuthGuard } from 'src/guards/auth.guard';
@@ -17,15 +17,15 @@ import { CreateGroupChatDto } from './dto/create-group-chat.dto';
 
 @UseGuards(AuthGuard)
 @Controller('chats')
-export class ChatController {
-  constructor(private readonly chatService: ChatService) {}
+export class ChatsController {
+  constructor(private readonly chatsService: ChatsService) {}
 
   @Get('user/:userId')
   async getUserChats(
     @Param('userId') userId: string,
     @Query() query: PaginationDto,
   ) {
-    return await this.chatService.getUserChats(
+    return await this.chatsService.getUserChats(
       userId,
       query.offset,
       query.limit,
@@ -34,7 +34,7 @@ export class ChatController {
 
   @Get(':id')
   async getChatById(@Param('id') id: string, @Query() query: PaginationDto) {
-    return await this.chatService.getChatById(id, query.offset, query.limit);
+    return await this.chatsService.getChatById(id, query.offset, query.limit);
   }
 
   @Post('private')
@@ -42,7 +42,7 @@ export class ChatController {
     @Body() createChatDto: CreateDirectChatDto,
     @Req() req: Request,
   ) {
-    return await this.chatService.createPrivateChat(
+    return await this.chatsService.createPrivateChat(
       req.user!.id,
       createChatDto.participantId,
     );
@@ -50,7 +50,7 @@ export class ChatController {
 
   @Post('group')
   async createGroupChat(@Body() createChatDto: CreateGroupChatDto) {
-    return await this.chatService.createGroupChat(
+    return await this.chatsService.createGroupChat(
       createChatDto.membersId,
       createChatDto.name,
     );

@@ -1,11 +1,11 @@
 import { Chat } from '../entities/chat.entity';
 import { PaginationDto } from 'src/db/dto/pagination.dto';
 
-export type ChatRepositoryOptions = {
+export type ChatsRepositoryOptions = {
   message?: PaginationDto;
 };
 
-export abstract class ChatRepository {
+export abstract class ChatsRepository {
   abstract createPrivateChat(
     participant1Id: string,
     participant2Id: string,
@@ -13,7 +13,7 @@ export abstract class ChatRepository {
   abstract createGroupChat(membersId: string[], name: string): Promise<Chat>;
   abstract getChatById(
     chatId: string,
-    options?: ChatRepositoryOptions,
+    options?: ChatsRepositoryOptions,
   ): Promise<Chat | null>;
   abstract getUserChats(
     userId: string,

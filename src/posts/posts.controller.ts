@@ -64,9 +64,9 @@ export class PostsController {
     return this.postsService.getPostComments(id, query);
   }
 
-  @Get('comments/:commentId/children')
+  @Get('comments/:id/children')
   getCommentsChildren(
-    @Param('commentId') commentId: string,
+    @Param('id') commentId: string,
     @Query() query: PaginationDto,
   ) {
     return this.postsService.getPostCommentsChildren(commentId, query);
@@ -81,17 +81,17 @@ export class PostsController {
     return this.postsService.addComment(id, data, req.user!);
   }
 
-  @Patch('comments/:commentId')
+  @Patch('comments/:id')
   updateComment(
-    @Param('commentId') commentId: string,
+    @Param('id') commentId: string,
     @Body() data: UpdatePostCommentDto,
     @Req() req: Request,
   ) {
     return this.postsService.updateComment(commentId, data, req.user?.id!);
   }
 
-  @Delete('comments/:commentId')
-  deleteComment(@Param('commentId') commentId: string, @Req() req: Request) {
+  @Delete('comments/:id')
+  deleteComment(@Param('id') commentId: string, @Req() req: Request) {
     return this.postsService.deleteComment(commentId, req.user?.id!);
   }
 

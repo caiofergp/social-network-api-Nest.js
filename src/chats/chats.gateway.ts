@@ -8,7 +8,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
-import { ChatService } from './chat.service';
+import { ChatsService } from './chats.service';
 import { Message } from './entities/message.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { BaseNotificationPayload } from 'src/notifications/notifications.listener';
@@ -27,14 +27,14 @@ type WsResponsePayload = {
 };
 
 @WebSocketGateway({
-  namespace: '/chat',
+  namespace: '/chats',
   cors: { origin: '*' },
 })
-export class ChatGateway implements OnGatewayConnection {
+export class ChatsGateway implements OnGatewayConnection {
   @WebSocketServer() server: Server;
 
   constructor(
-    private readonly chatService: ChatService,
+    private readonly chatsService: ChatsService,
     private readonly eventEmitter: EventEmitter2,
     private readonly unitOfWork: UnitOfWork,
     private readonly jwtService: JwtService,
@@ -52,14 +52,14 @@ export class ChatGateway implements OnGatewayConnection {
     const senderId = client.data.userId;
 
     return await this.unitOfWork.runInTransaction(async () => {
-      const msg = await this.chatService.saveMessage(
+      const msg = await this.chatsService.saveMessage(
         senderId,
         payload.chatId,
         payload.content,
         payload.medias,
       );
 
-      const chat = await this.chatService.getChatById(payload.chatId);
+      const chat = await this.chatsService.getChatById(payload.chatId);
 
       if (!chat) {
         return { status: WsStatus.FAILED, data: 'Chat not found' };
