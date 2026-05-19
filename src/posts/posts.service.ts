@@ -240,20 +240,28 @@ export class PostsService {
   }
 
   async getPostComments(postId: string, query: PaginationDto) {
+    const limit = query?.limit || 20;
+    const page = query?.page || 1;
+    const offset = (page - 1) * limit;
+
     const comments = await this.commentRepository.findByPostId(
       postId,
-      query?.limit || 20,
-      query?.offset || 0,
+      limit,
+      offset,
     );
 
     return { comments };
   }
 
   async getPostCommentsChildren(commentId: string, query: PaginationDto) {
+    const limit = query?.limit || 20;
+    const page = query?.page || 1;
+    const offset = (page - 1) * limit;
+
     const comments = await this.commentRepository.findChildrenByCommentId(
       commentId,
-      query?.limit || 20,
-      query?.offset || 0,
+      limit,
+      offset,
     );
 
     return { comments };

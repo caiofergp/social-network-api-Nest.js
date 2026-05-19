@@ -27,14 +27,14 @@ export class ChatsController {
   ) {
     return await this.chatsService.getUserChats(
       userId,
-      query.offset,
+      query.page,
       query.limit,
     );
   }
 
   @Get(':id')
   async getChatById(@Param('id') id: string, @Query() query: PaginationDto) {
-    return await this.chatsService.getChatById(id, query.offset, query.limit);
+    return await this.chatsService.getChatById(id, query.page, query.limit);
   }
 
   @Post('private')

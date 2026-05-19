@@ -1,8 +1,10 @@
 import { Chat } from '../entities/chat.entity';
-import { PaginationDto } from 'src/db/dto/pagination.dto';
 
 export type ChatsRepositoryOptions = {
-  message?: PaginationDto;
+  message?: {
+    limit?: number;
+    offset?: number;
+  };
 };
 
 export abstract class ChatsRepository {

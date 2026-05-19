@@ -8,7 +8,8 @@ export class FeedService {
 
   async getFollowedUserPosts(userId: string, paginationDto: PaginationDto) {
     const limit = paginationDto?.limit || 20;
-    const offset = paginationDto?.offset ?? 0;
+    const page = paginationDto?.page || 1;
+    const offset = (page - 1) * limit;
 
     const posts = await this.feedRepository.getFollowedUserPosts(
       userId,
@@ -21,7 +22,8 @@ export class FeedService {
 
   async getRecommendedFeed(userId: string, paginationDto: PaginationDto) {
     const limit = paginationDto?.limit || 20;
-    const offset = paginationDto?.offset ?? 0;
+    const page = paginationDto?.page || 1;
+    const offset = (page - 1) * limit;
 
     const posts = await this.feedRepository.getRecommendedFeed(
       userId,

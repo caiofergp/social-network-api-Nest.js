@@ -91,13 +91,17 @@ export class ChatsService {
     return await this.chatsRepository.createGroupChat(membersId, name);
   }
 
-  async getChatById(chatId: string, offset = 0, limit = 20) {
+  async getChatById(chatId: string, page = 1, limit = 20) {
+    const offset = (page - 1) * limit;
+
     return await this.chatsRepository.getChatById(chatId, {
       message: { offset, limit },
     });
   }
 
-  async getUserChats(userId: string, offset = 0, limit = 20) {
+  async getUserChats(userId: string, page = 1, limit = 20) {
+    const offset = (page - 1) * limit;
+
     return await this.chatsRepository.getUserChats(userId, offset, limit);
   }
 }

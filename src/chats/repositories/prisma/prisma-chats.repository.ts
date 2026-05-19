@@ -2,7 +2,6 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Chat, ChatType } from 'src/chats/entities/chat.entity';
 import { ChatsRepository, ChatsRepositoryOptions } from '../chats.repository';
 import { PrismaService } from 'src/db/prisma/prisma.service';
-import { PaginationDto } from 'src/db/dto/pagination.dto';
 
 @Injectable()
 export class PrismaChatsRepository implements ChatsRepository {
