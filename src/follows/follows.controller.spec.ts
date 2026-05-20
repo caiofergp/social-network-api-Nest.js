@@ -9,9 +9,7 @@ describe('FollowsController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [FollowsController],
-      providers: [
-        { provide: FollowsService, useValue: {} },
-      ],
+      providers: [{ provide: FollowsService, useValue: {} }],
     })
       .overrideGuard(AuthGuard)
       .useValue({ canActivate: () => true })

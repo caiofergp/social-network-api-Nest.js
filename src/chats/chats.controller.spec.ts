@@ -9,9 +9,7 @@ describe('ChatsController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ChatsController],
-      providers: [
-        { provide: ChatsService, useValue: {} },
-      ],
+      providers: [{ provide: ChatsService, useValue: {} }],
     })
       .overrideGuard(AuthGuard)
       .useValue({ canActivate: () => true })

@@ -13,3 +13,4 @@ export class PaginationDto {
   @Min(1)
   page?: number;
 }
+

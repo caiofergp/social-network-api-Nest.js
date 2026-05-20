@@ -32,9 +32,10 @@ export class CreatePostDto {
   @Type(() => MediaContent)
   medias?: MediaContent[];
 
+  @ValidateIf((o) => !o.medias?.length)
   @IsNotEmpty()
   @IsObject()
   @ValidateNested()
   @Type(() => PostContent)
-  post: PostContent;
+  post?: PostContent;
 }

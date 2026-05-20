@@ -9,9 +9,7 @@ describe('StorageController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [StorageController],
-      providers: [
-        { provide: StorageService, useValue: {} },
-      ],
+      providers: [{ provide: StorageService, useValue: {} }],
     })
       .overrideGuard(AuthGuard)
       .useValue({ canActivate: () => true })

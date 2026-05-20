@@ -3,7 +3,7 @@ import { Media } from 'src/medias/entities/media.entity';
 
 export class Post {
   id: string;
-  content: string | null;
+  content?: string | null;
   user_id: string;
 
   medias?: Media[];

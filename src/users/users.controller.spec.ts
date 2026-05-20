@@ -9,9 +9,7 @@ describe('UsersController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
-      providers: [
-        { provide: UsersService, useValue: {} },
-      ],
+      providers: [{ provide: UsersService, useValue: {} }],
     })
       .overrideGuard(AuthGuard)
       .useValue({ canActivate: () => true })
