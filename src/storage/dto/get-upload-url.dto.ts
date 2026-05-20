@@ -1,4 +1,4 @@
-import { IsEnum, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
 export enum StorageModel {
   POST = 'post',
@@ -14,5 +14,6 @@ export class GetUploadUrlParamsDto {
 
 export class GetUploadUrlQueryDto {
   @IsString()
+  @IsNotEmpty()
   file: string;
 }
