@@ -59,7 +59,7 @@ ALTER TABLE `shared_posts` DROP FOREIGN KEY `shared_posts_post_id_fkey`;
 ALTER TABLE `shared_posts` DROP FOREIGN KEY `shared_posts_user_id_fkey`;
 
 -- DropIndex
-DROP INDEX `follower_id_following_id_key` ON `follows`;
+DROP INDEX `follows_follower_id_following_id_key` ON `follows`;
 
 -- AlterTable
 ALTER TABLE `chats` MODIFY `name` VARCHAR(191) NULL;
@@ -104,7 +104,7 @@ CREATE TABLE `medias` (
 CREATE INDEX `chat_members_user_id_idx` ON `chat_members`(`user_id`);
 
 -- CreateIndex
-CREATE UNIQUE INDEX `follows_follower_id_key` ON `follows`(`follower_id`);
+CREATE UNIQUE INDEX `follows_follower_id_following_id_key` ON `follows`(`follower_id`, `following_id`);
 
 -- CreateIndex
 CREATE UNIQUE INDEX `users_avatar_id_key` ON `users`(`avatar_id`);

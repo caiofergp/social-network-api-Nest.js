@@ -73,7 +73,7 @@ model Follow {
   following          User           @relation("following", fields: [following_id], references: [id], onDelete: Cascade)
   followNotification Notification[] @relation("followNotification")
 
-  @@unique([follower_id])
+  @@unique([follower_id, following_id])
   @@index([following_id])
   @@map("follows")
 }
