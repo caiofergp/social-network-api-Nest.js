@@ -5,20 +5,11 @@ import {
   ValidateNested,
   IsDateString,
   IsUrl,
-  IsEnum,
 } from 'class-validator';
-
-enum ProfileMediaContentTypes {
-  AVATAR = 'AVATAR',
-  COVER = 'COVER',
-}
 
 export class ProfileMediaContent {
   @IsString()
   path: string;
-
-  @IsEnum(ProfileMediaContentTypes)
-  type: ProfileMediaContentTypes;
 
   @IsString()
   mime_type: string;
@@ -28,6 +19,10 @@ export class ProfileMediaContent {
 }
 
 export class UpdateProfileDto {
+  @IsOptional()
+  @IsString()
+  name?: string;
+
   @IsOptional()
   @IsString()
   bio?: string;

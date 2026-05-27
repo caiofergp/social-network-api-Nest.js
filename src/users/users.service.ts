@@ -8,6 +8,7 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UnitOfWork } from 'src/db/unit-of-work';
 import { StorageAdapter } from 'src/adapters/storage/storage.adapter';
 import { MediaRepository } from 'src/medias/repositories/media.repository';
+import { MediaTypes } from 'src/medias/entities/media.entity';
 
 @Injectable()
 export class UsersService {
@@ -63,9 +64,9 @@ export class UsersService {
           user_id: userId,
           entity_type: 'USER',
           entity_id: userId,
-          type: 'AVATAR',
+          type: MediaTypes.AVATAR,
           path: newPath,
-          mime_type: avatar.mime_type || avatar.type,
+          mime_type: avatar.mime_type,
           size: avatar.size,
         });
 
@@ -98,9 +99,9 @@ export class UsersService {
           user_id: userId,
           entity_type: 'USER',
           entity_id: userId,
-          type: 'COVER',
+          type: MediaTypes.COVER,
           path: newPath,
-          mime_type: cover.mime_type || cover.type,
+          mime_type: cover.mime_type,
           size: cover.size,
         });
 
