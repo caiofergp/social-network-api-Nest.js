@@ -16,7 +16,7 @@ export class Notification {
   recipient_id: string;
   actor_id: string;
   type: NotificationType | string;
-  reference_id: string | null;
+  reference_id: string;
   read: boolean;
 
   actor?: Partial<User> | null;
