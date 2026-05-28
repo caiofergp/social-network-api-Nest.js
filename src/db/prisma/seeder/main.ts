@@ -1,15 +1,14 @@
+import 'dotenv/config';
 import { faker } from '@faker-js/faker';
 import { Post } from 'src/posts/entities/post.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Comment } from 'src/posts/entities/comment.entity';
 import { Like } from 'src/posts/entities/like.entity';
-import { Follow } from 'src/follows/entities/follow.entity';
-import { SharedPost } from 'src/posts/entities/shared-post.entity';
 import { PrismaClient } from '../../../generated/prisma/client';
 import { PrismaMariaDb } from 'node_modules/@prisma/adapter-mariadb/dist/index.mjs';
 
 const prisma = new PrismaClient({
-  adapter: new PrismaMariaDb('mariadb://root:@localhost:3306/social-network'),
+  adapter: new PrismaMariaDb(process.env.DATABASE_URL!),
 });
 
 const seed = async () => {
@@ -18,6 +17,11 @@ const seed = async () => {
   await prisma.sharedPost.deleteMany();
   await prisma.post.deleteMany();
   await prisma.follow.deleteMany();
+  await prisma.notification.deleteMany();
+  await prisma.passwordResetToken.deleteMany();
+  await prisma.chatMember.deleteMany();
+  await prisma.chat.deleteMany();
+  await prisma.message.deleteMany();
   await prisma.user.deleteMany();
 
   const users = Array.from({ length: 10 }).map(() => ({
