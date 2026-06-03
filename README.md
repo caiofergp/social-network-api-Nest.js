@@ -1,98 +1,163 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Social Network API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+[English](#english) | [Português](#português)
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## English
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+### 🚀 About the Project
 
-## Project setup
+This is a robust and scalable Social Network API, developed as a **portfolio** project to demonstrate skills in modern backend development, software architecture, and coding best practices.
 
-```bash
-$ npm install
-```
+The application simulates the core features of a social network, allowing users to interact with each other, share content, and receive real-time updates.
 
-## Compile and run the project
+### 🏗️ Architecture
 
-```bash
-# development
-$ npm run start
+The project was built following **Clean Architecture** and **SOLID** principles, ensuring low coupling and high testability.
 
-# watch mode
-$ npm run start:dev
+- **Repository & Unit of Work Pattern:** Used to abstract the data layer and ensure transaction consistency.
+- **Domain-Driven Design (DDD) Principles:** Modular organization by business domains (Users, Posts, Chats, etc.).
+- **Adapters:** Use of adapters to decouple external services (Storage, Mailer, Hash).
+- **Event-Driven:** Communication between modules through NestJS internal events.
+- **Real-time:** WebSocket integration for instant chats and notifications.
+- **Job Queue:** Asynchronous processing of heavy tasks using BullMQ and Redis.
 
-# production mode
-$ npm run start:prod
-```
+### 🛠️ Tech Stack
 
-## Run tests
+- **Framework:** [NestJS](https://nestjs.com/)
+- **Language:** TypeScript
+- **ORM:** [Prisma](https://www.prisma.io/)
+- **Database:** MySQL (MariaDB)
+- **Cache & Queue:** Redis + BullMQ
+- **Storage:** MinIO (S3 Compatible)
+- **Real-time:** Socket.io
+- **Testing:** Jest & Supertest (Unitary and E2E)
+- **Containerization:** Docker & Docker Compose
 
-```bash
-# unit tests
-$ npm run test
+### 📋 Main Features
 
-# e2e tests
-$ npm run test:e2e
+- **Auth & Authorization:** Registration, Login (JWT with Cookies), password recovery.
+- **User Management:** Profiles, follower system (follow/unfollow).
+- **Content:** Post creation, editing, and deletion; Multi-level comment system; Likes on posts and comments.
+- **Feed:** Dynamic feed based on followed users.
+- **Real-time Communication:**
+  - Private and group chats.
+  - Instant notifications for likes, comments, and new followers.
+- **Media:** Image and file upload integrated with MinIO.
+- **Background Jobs:** Email processing and asynchronous tasks.
 
-# test coverage
-$ npm run test:cov
-```
+### 🏃 How to Run
 
-## Deployment
+**Prerequisites:** Docker and Docker Compose installed.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+1.  **Clone the repository:**
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+    ```bash
+    git clone https://github.com/your-username/social-network-api.git
+    cd social-network-api
+    ```
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+2.  **Environment Variables:**
+    Copy `.env.example` to `.env` (if not present, create one based on current `.env`).
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+3.  **Start Containers:**
 
-## Resources
+    ```bash
+    docker-compose up -d app-dev
+    ```
 
-Check out a few resources that may come in handy when working with NestJS:
+    _This will start the database, redis, minio, and the application in development mode (watch)._
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+4.  **Access Swagger Documentation:**
+    The API will be available at `http://localhost:3000/api`.
 
-## Support
+5.  **Running Tests:**
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+    ```bash
+    # Unit Tests
+    docker-compose run --rm test-unit
 
-## Stay in touch
+    # E2E Tests
+    docker-compose run --rm test-e2e
+    ```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+---
 
-## License
+## Português
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+### 🚀 Sobre o Projeto
+
+Esta é uma API de Reder Social robusta e escalável, desenvolvida como um projeto de **portfólio** para demonstrar habilidades em desenvolvimento backend moderno, arquitetura de software e boas práticas de codificação.
+
+A aplicação simula as funcionalidades principais de uma rede social, permitindo que usuários interajam entre si, compartilhem conteúdos e recebam atualizações em tempo real.
+
+### 🏗️ Arquitetura
+
+O projeto foi construído seguindo princípios de **Clean Architecture** e **SOLID**, garantindo baixo acoplamento e alta testabilidade.
+
+- **Padrão Repository & Unit of Work:** Utilizado para abstrair a camada de dados e garantir a consistência das transações.
+- **Domain-Driven Design (DDD) Principles:** Organização modular por domínios de negócio (Usuários, Posts, Chats, etc.).
+- **Adapters:** Uso de adapters para desacoplar serviços externos (Storage, Mailer, Hash).
+- **Event-Driven:** Comunicação entre módulos através de eventos internos do NestJS.
+- **Real-time:** Integração com WebSockets para chats e notificações instantâneas.
+- **Job Queue:** Processamento assíncrono de tarefas pesadas usando BullMQ e Redis.
+
+### 🛠️ Tecnologias
+
+- **Framework:** [NestJS](https://nestjs.com/)
+- **Linguagem:** TypeScript
+- **ORM:** [Prisma](https://www.prisma.io/)
+- **Banco de Dados:** MySQL (MariaDB)
+- **Cache & Queue:** Redis + BullMQ
+- **Storage:** MinIO (S3 Compatible)
+- **Real-time:** Socket.io
+- **Testes:** Jest & Supertest (Unitários e E2E)
+- **Containerização:** Docker & Docker Compose
+
+### 📋 Principais Funcionalidades
+
+- **Autenticação & Autorização:** Registro, Login (JWT com Cookies), recuperação de senha.
+- **Gestão de Usuários:** Perfis, sistema de seguidores (follow/unfollow).
+- **Conteúdo:** Criação, edição e exclusão de posts; Sistema de comentários multinível; Likes em posts e comentários.
+- **Feed:** Feed dinâmico baseado nos usuários seguidos.
+- **Comunicação Real-time:**
+  - Chats privados e em grupo.
+  - Notificações instantâneas de likes, comentários e novos seguidores.
+- **Mídia:** Upload de imagens e arquivos integrados com MinIO.
+- **Background Jobs:** Processamento de e-mails e tarefas assíncronas.
+
+### 🏃 Como Rodar o Projeto
+
+**Pré-requisitos:** Docker e Docker Compose instalados.
+
+1.  **Clone o repositório:**
+
+    ```bash
+    git clone https://github.com/seu-usuario/social-network-api.git
+    cd social-network-api
+    ```
+
+2.  **Configure as variáveis de ambiente:**
+    Copie o arquivo `.env.example` para `.env` (se não existir, crie um baseado no `.env` atual).
+
+3.  **Suba os containers:**
+
+    ```bash
+    docker-compose up -d app-dev
+    ```
+
+    _Este comando subirá o banco de dados, redis, minio e a aplicação em modo de desenvolvimento (watch)._
+
+4.  **Acesse a documentação (Swagger):**
+    A API estará disponível em `http://localhost:3000/api`.
+
+5.  **Rodar Testes:**
+
+    ```bash
+    # Testes Unitários
+    docker-compose run --rm test-unit
+
+    # Testes E2E
+    docker-compose run --rm test-e2e
+    ```
