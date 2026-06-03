@@ -8,6 +8,13 @@
   },
   "moduleNameMapper": {
     "^src/(.*)$": "<rootDir>/../src/$1",
-    "^(\\.\\.?/.*)\\.js$": "$1"
-  }
+    "^(\\.\\.\\/.*)\\.js$": "$1"
+  },
+  "setupFiles": ["<rootDir>/setup.ts"],
+  "maxWorkers": 1,
+  "globalSetup": "<rootDir>/../src/db/prisma/seeder/global-setup.ts",
+  "globalTeardown": "<rootDir>/../src/db/prisma/global-teardown.ts",
+  "transformIgnorePatterns": [
+    "node_modules/(?!(\\@faker-js/faker)/)"
+  ]
 }

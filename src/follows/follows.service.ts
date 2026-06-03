@@ -12,9 +12,9 @@ export class FollowsService {
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
-  async follow(user: User, followingId: string) {
+  async follow(follower: User, followingId: string) {
     const followed = await this.followRepository
-      .create(user.id, followingId)
+      .create(follower.id, followingId)
       .catch((error) => {
         if (error.code === PrismaErrorCode.uniqueConstraint) {
           throw new BadRequestException('You are already following this user');
@@ -30,8 +30,8 @@ export class FollowsService {
     this.eventEmitter.emit(
       'follow.created',
       new BaseNotificationPayload({
-        actorId: user.id,
-        actorName: user.name,
+        actorId: follower.id,
+        actorName: follower.name,
         recipientId: followingId,
         referenceId: followed.id,
       }),
@@ -40,14 +40,16 @@ export class FollowsService {
     return followed;
   }
 
-  async unfollow(id: string) {
-    return await this.followRepository.delete(id).catch((error) => {
-      if (error.code === PrismaErrorCode.notFound) {
-        throw new BadRequestException('You are not following this user');
-      }
+  async unfollow(follower: User, followingId: string) {
+    return await this.followRepository
+      .delete(follower.id, followingId)
+      .catch((error) => {
+        if (error.code === PrismaErrorCode.notFound) {
+          throw new BadRequestException('You are not following this user');
+        }
 
-      throw error;
-    });
+        throw error;
+      });
   }
 
   async getFollowers(userId: string) {

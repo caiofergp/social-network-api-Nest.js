@@ -32,7 +32,7 @@ export class FollowsController {
   }
 
   @Delete(':userId')
-  unfollow(@Param('userId') userId: string) {
-    return this.followsService.unfollow(userId);
+  unfollow(@Req() req: Request, @Param('userId') userId: string) {
+    return this.followsService.unfollow(req.user!, userId);
   }
 }

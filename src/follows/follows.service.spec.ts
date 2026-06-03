@@ -104,10 +104,10 @@ describe('FollowsService', () => {
     it('should delete a follow', async () => {
       followRepository.delete.mockResolvedValue(undefined);
 
-      const result = await service.unfollow('user-2');
+      const result = await service.unfollow(mockUser, 'user-2');
 
       expect(result).toBeUndefined();
-      expect(followRepository.delete).toHaveBeenCalledWith('user-2');
+      expect(followRepository.delete).toHaveBeenCalledWith('user-1', 'user-2');
     });
 
     it('should throw BadRequestException if not following', async () => {
@@ -115,7 +115,7 @@ describe('FollowsService', () => {
         code: PrismaErrorCode.notFound,
       });
 
-      await expect(service.unfollow('user-2')).rejects.toThrow(
+      await expect(service.unfollow(mockUser, 'user-2')).rejects.toThrow(
         new BadRequestException('You are not following this user'),
       );
     });
@@ -124,7 +124,7 @@ describe('FollowsService', () => {
       const error = new Error('Some other error');
       followRepository.delete.mockRejectedValue(error);
 
-      await expect(service.unfollow('user-2')).rejects.toThrow(error);
+      await expect(service.unfollow(mockUser, 'user-2')).rejects.toThrow(error);
     });
   });
 

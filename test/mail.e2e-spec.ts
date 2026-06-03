@@ -9,7 +9,7 @@ describe('MailModule (e2e)', () => {
   let service: MailService;
   let queue: any;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const queueMock = {
       add: jest.fn().mockResolvedValue({ id: '1' }),
     };
@@ -31,7 +31,7 @@ describe('MailModule (e2e)', () => {
     queue = app.get(getQueueToken('mail_queue'));
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     await app.close();
   });
 

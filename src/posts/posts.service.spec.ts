@@ -462,7 +462,7 @@ describe('PostsService', () => {
         20,
         0,
       );
-      expect(result).toEqual({ comments });
+      expect(result).toEqual(comments);
     });
 
     it('should return comments with custom pagination', async () => {
@@ -493,7 +493,7 @@ describe('PostsService', () => {
         10,
         20,
       );
-      expect(result).toEqual({ comments });
+      expect(result).toEqual(comments);
     });
   });
 
@@ -526,7 +526,7 @@ describe('PostsService', () => {
         5,
         5,
       );
-      expect(result).toEqual({ comments });
+      expect(result).toEqual(comments);
     });
   });
 
@@ -598,7 +598,7 @@ describe('PostsService', () => {
       expect(commentRepository.update).toHaveBeenCalledWith('comment-123', {
         content: 'new content',
       });
-      expect(result).toEqual({ success: true });
+      expect(result).toEqual({ ...comment, content: 'new content' });
     });
 
     it('should throw NotFoundException if comment not found', async () => {

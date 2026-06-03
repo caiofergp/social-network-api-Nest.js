@@ -6,6 +6,7 @@ import {
   ValidateNested,
   IsArray,
   IsOptional,
+  IsUUID,
 } from 'class-validator';
 
 export class UpdateMediaContent {
@@ -23,9 +24,10 @@ export class UpdateMediaContent {
 }
 
 export class UpdatePostContent {
-  @IsString()
+  @IsOptional()
+  @IsUUID()
   @IsNotEmpty()
-  id: string;
+  id?: string;
 
   @IsString()
   @IsNotEmpty()

@@ -16,7 +16,7 @@ describe('UpdatePostDto', () => {
   it('should pass validation with valid post object only', async () => {
     const dtoObject = {
       post: {
-        id: 'post-uuid',
+        id: '123e4567-e89b-12d3-a456-426614174000',
         content: 'Updated post content',
       },
     };
@@ -30,7 +30,7 @@ describe('UpdatePostDto', () => {
   it('should pass validation with valid post and medias', async () => {
     const dtoObject = {
       post: {
-        id: 'post-uuid',
+        id: '123e4567-e89b-12d3-a456-426614174000',
         content: 'Updated post content',
       },
       medias: [

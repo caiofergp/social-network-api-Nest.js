@@ -66,8 +66,8 @@ describe('FollowsController', () => {
   describe('unfollow', () => {
     it('should call service.unfollow', async () => {
       service.unfollow.mockResolvedValue({} as any);
-      await controller.unfollow('user-2');
-      expect(service.unfollow).toHaveBeenCalledWith('user-2');
+      await controller.unfollow(mockRequest, 'user-2');
+      expect(service.unfollow).toHaveBeenCalledWith(mockRequest.user, 'user-2');
     });
   });
 });

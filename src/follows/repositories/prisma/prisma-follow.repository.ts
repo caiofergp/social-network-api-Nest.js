@@ -16,10 +16,13 @@ export class PrismaFollowRepository implements FollowRepository {
     });
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(followerId: string, followingId: string): Promise<void> {
     await this.prisma.follow.delete({
       where: {
-        id,
+        follower_id_following_id: {
+          follower_id: followerId,
+          following_id: followingId,
+        },
       },
     });
   }

@@ -1,146 +1,146 @@
-import 'dotenv/config';
 import { faker } from '@faker-js/faker';
-import { Post } from 'src/posts/entities/post.entity';
-import { User } from 'src/users/entities/user.entity';
-import { Comment } from 'src/posts/entities/comment.entity';
-import { Like } from 'src/posts/entities/like.entity';
-import { PrismaClient } from '../../../generated/prisma/client';
-import { PrismaMariaDb } from 'node_modules/@prisma/adapter-mariadb/dist/index.mjs';
+import { PrismaClient } from '@prisma/client';
+import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 
-const prisma = new PrismaClient({
-  adapter: new PrismaMariaDb(process.env.DATABASE_URL!),
-});
+export const mockUser = {
+  id: 'user-post-e2e',
+  name: 'Post E2E User',
+  email: 'e2e@social-network.test',
+  password: 'Password123!',
+};
 
-const seed = async () => {
+function createPrismaClient(databaseUrl?: string): PrismaClient {
+  const url = databaseUrl || process.env.DATABASE_URL;
+
+  if (!url) {
+    throw new Error(
+      'DATABASE_URL is not defined. Provide it via parameter or environment variable.',
+    );
+  }
+
+  console.log(`[Prisma] Connecting to: ${url.replace(/:.*@/, ':****@')}`);
+
+  return new PrismaClient({
+    adapter: new PrismaMariaDb(url),
+    transactionOptions: {
+      timeout: 60000,
+      maxWait: 20000,
+    },
+  });
+}
+
+export async function clearDatabase(prisma: PrismaClient): Promise<void> {
   await prisma.like.deleteMany();
-  await prisma.comment.deleteMany();
+  await prisma.comment.deleteMany({ where: { parent_id: { not: null } } });
+  await prisma.comment.deleteMany({ where: { parent_id: null } });
   await prisma.sharedPost.deleteMany();
   await prisma.post.deleteMany();
   await prisma.follow.deleteMany();
   await prisma.notification.deleteMany();
   await prisma.passwordResetToken.deleteMany();
+  await prisma.message.deleteMany();
   await prisma.chatMember.deleteMany();
   await prisma.chat.deleteMany();
-  await prisma.message.deleteMany();
+  await prisma.media.deleteMany();
   await prisma.user.deleteMany();
+}
 
-  const users = Array.from({ length: 10 }).map(() => ({
-    name: faker.person.fullName(),
-    email: faker.internet.email(),
-    password: faker.internet.password(),
-    bio: faker.lorem.sentence(),
-    birth_date: faker.date.birthdate(),
-    email_verified_at: faker.date.recent(),
-    gender: faker.helpers.arrayElement(['male', 'female', 'other']),
-    location: faker.location.city(),
-    token: null,
-  })) as User[];
+export default async function seed(databaseUrl?: string): Promise<void> {
+  const prisma = createPrismaClient(databaseUrl);
 
-  const createdUsers = await prisma.user
-    .createMany({
-      data: users,
-    })
-    .then(() => prisma.user.findMany());
+  try {
+    await clearDatabase(prisma);
 
-  const userIds = createdUsers.map((u) => u.id);
+    const users = [
+      mockUser,
+      ...Array.from({ length: 10 }).map(() => ({
+        name: faker.person.fullName(),
+        email: faker.internet.email(),
+        password: faker.internet.password(),
+        bio: faker.lorem.sentence(),
+        birth_date: faker.date.birthdate(),
+        email_verified_at: faker.date.recent(),
+        gender: faker.helpers.arrayElement(['male', 'female', 'other']),
+        location: faker.location.city(),
+        token: null,
+      })),
+    ];
 
-  const posts = Array.from({ length: 20 }).map(() => ({
-    user_id: faker.helpers.arrayElement(createdUsers.map((u) => u.id)),
-    content: faker.lorem.paragraph({ min: 1, max: 1 }),
-  })) as Post[];
+    const createdUsers = await prisma.user
+      .createMany({ data: users })
+      .then(() => prisma.user.findMany());
 
-  const createdPosts = await prisma.post
-    .createMany({
-      data: posts,
-    })
-    .then(() => prisma.post.findMany());
+    const posts = Array.from({ length: 20 }).map(() => ({
+      user_id: faker.helpers.arrayElement(createdUsers.map((u) => u.id)),
+      content: faker.lorem.paragraph({ min: 1, max: 1 }),
+    }));
 
-  const comments = Array.from({ length: 50 }).map(() => ({
-    user_id: faker.helpers.arrayElement(createdUsers.map((u) => u.id)),
-    post_id: faker.helpers.arrayElement(createdPosts.map((p) => p.id)),
-    content: faker.lorem.sentence(),
-  })) as Comment[];
+    const createdPosts = await prisma.post
+      .createMany({ data: posts })
+      .then(() => prisma.post.findMany());
 
-  const createdComments = await prisma.comment
-    .createMany({
-      data: comments,
-    })
-    .then(() => prisma.comment.findMany());
+    const comments = Array.from({ length: 50 }).map(() => ({
+      user_id: faker.helpers.arrayElement(createdUsers.map((u) => u.id)),
+      post_id: faker.helpers.arrayElement(createdPosts.map((p) => p.id)),
+      content: faker.lorem.sentence(),
+    }));
 
-  const references = {
-    post: createdPosts.map((p) => p.id),
-    comment: createdComments.map((c) => c.id),
-  };
+    await prisma.comment.createMany({ data: comments });
 
-  const liked: { userId: string; referenceId: string }[] = [];
+    const references = {
+      post: createdPosts.map((p) => p.id),
+      comment: (await prisma.comment.findMany()).map((c) => c.id),
+    };
 
-  const likes = Array.from({ length: 100 }).map(() => {
-    const type = faker.helpers.arrayElement(['post', 'comment']);
-    let referenceId = faker.helpers.arrayElement(references[type]);
-    let userId = faker.helpers.arrayElement(createdUsers.map((u) => u.id));
+    const likedKeys = new Set<string>();
+    const likes: { type: string; user_id: string; reference_id: string }[] = [];
 
-    const isDuplicate = liked.some(
-      (l) => l.userId === userId && l.referenceId === referenceId,
-    );
+    for (let i = 0; i < 100; i++) {
+      const type = faker.helpers.arrayElement(['post', 'comment'] as const);
+      const userId = faker.helpers.arrayElement(createdUsers.map((u) => u.id));
+      const referenceId = faker.helpers.arrayElement(references[type]);
+      const key = `${userId}:${type}:${referenceId}`;
 
-    while (isDuplicate) {
-      const newUserId = faker.helpers.arrayElement(
-        createdUsers.map((u) => u.id),
-      );
+      if (likedKeys.has(key)) {
+        continue;
+      }
 
-      const newReferenceId = faker.helpers.arrayElement(references[type]);
-      const isNotDuplicate = !liked.some(
-        (l) => l.userId === newUserId && l.referenceId === newReferenceId,
-      );
+      likedKeys.add(key);
+      likes.push({ type, user_id: userId, reference_id: referenceId });
+    }
 
-      if (isNotDuplicate) {
-        userId = newUserId;
-        referenceId = newReferenceId;
-        break;
+    await prisma.like.createMany({ data: likes });
+
+    const allPossibleFollows: { follower_id: string; following_id: string }[] =
+      [];
+
+    for (const follower of createdUsers) {
+      for (const following of createdUsers) {
+        if (follower.id !== following.id) {
+          allPossibleFollows.push({
+            follower_id: follower.id,
+            following_id: following.id,
+          });
+        }
       }
     }
 
-    liked.push({ userId, referenceId });
+    const followsData = faker.helpers.shuffle(allPossibleFollows).slice(0, 30);
 
-    return {
-      type,
-      user_id: userId,
-      reference_id: referenceId,
-    } as Like;
-  });
-
-  await prisma.like.createMany({
-    data: likes,
-  });
-
-  const allPossibleFollows: { follower_id: string; following_id: string }[] =
-    [];
-
-  for (const followerId of userIds) {
-    for (const followingId of userIds) {
-      if (followerId !== followingId) {
-        allPossibleFollows.push({
-          follower_id: followerId,
-          following_id: followingId,
-        });
-      }
-    }
+    await prisma.follow.createMany({ data: followsData });
+  } finally {
+    await prisma.$disconnect();
   }
+}
 
-  const shuffledFollows = faker.helpers.shuffle(allPossibleFollows);
-  const followsData = shuffledFollows.slice(0, 30);
-
-  await prisma.follow.createMany({
-    data: followsData,
-  });
-};
-
-seed()
-  .then(() => {
-    console.log('Seeding completed successfully.');
-    prisma.$disconnect();
-  })
-  .catch((error) => {
-    console.error('Error during seeding:', error);
-    prisma.$disconnect();
-  });
+if (require.main === module) {
+  seed()
+    .then(() => {
+      console.log('Seed completed successfully');
+      process.exit(0);
+    })
+    .catch((error) => {
+      console.error('Seed failed:', error);
+      process.exit(1);
+    });
+}

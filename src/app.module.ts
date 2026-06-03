@@ -17,44 +17,47 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { ChatsModule } from './chats/chats.module';
 import { UsersModule } from './users/users.module';
 
-@Module({
-  imports: [
-    ScheduleModule.forRoot(),
-    EventEmitterModule.forRoot({
-      wildcard: false,
-      delimiter: '.',
-      newListener: false,
-      removeListener: false,
-      maxListeners: 10,
-      verboseMemoryLeak: false,
-      ignoreErrors: false,
-    }),
-    AuthModule,
-    PrismaModule,
-    BullModule.forRoot({
-      connection: {
-        host: process.env.BULL_HOST,
-        port: Number(process.env.BULL_PORT),
+const importsArray = [
+  ScheduleModule.forRoot(),
+  EventEmitterModule.forRoot({
+    wildcard: false,
+    delimiter: '.',
+    newListener: false,
+    removeListener: false,
+    maxListeners: 10,
+    verboseMemoryLeak: false,
+    ignoreErrors: false,
+  }),
+  BullModule.forRoot({
+    connection: {
+      host: process.env.BULL_HOST || 'localhost',
+      port: Number(process.env.BULL_PORT) || 6379,
+    },
+  }),
+  BullBoardModule.forRoot({
+    route: '/admin/queues',
+    adapter: ExpressAdapter,
+    middleware: basicAuth({
+      users: {
+        [process.env.BULL_ADMIN_USER || 'admin']:
+          process.env.BULL_ADMIN_PASSWORD || 'admin',
       },
+      challenge: true,
     }),
-    BullBoardModule.forRoot({
-      route: '/admin/queues',
-      adapter: ExpressAdapter,
-      middleware: basicAuth({
-        users: {
-          [process.env.BULL_ADMIN_USER!]: process.env.BULL_ADMIN_PASSWORD!,
-        },
-        challenge: true,
-      }),
-    }),
-    MailModule,
-    FollowsModule,
-    PostsModule,
-    StorageModule,
-    NotificationsModule,
-    ChatsModule,
-    UsersModule,
-  ],
+  }),
+  AuthModule,
+  PrismaModule,
+  MailModule,
+  FollowsModule,
+  PostsModule,
+  StorageModule,
+  NotificationsModule,
+  ChatsModule,
+  UsersModule,
+];
+
+@Module({
+  imports: importsArray,
   controllers: [AppController],
   providers: [AppService],
 })

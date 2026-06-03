@@ -203,18 +203,34 @@ export class PostsService {
     });
   }
 
-  async addLike(postId: string, user: User, type: LikeReferenceType) {
-    const post = await this.postRepository.findOne(postId, { user: true });
+  async addLike(referenceId: string, user: User, type: LikeReferenceType) {
+    let recipientId: string;
 
-    if (!post) {
-      throw new NotAcceptableException('Post not found');
+    if (type === LikeReferenceType.POST) {
+      const post = await this.postRepository.findOne(referenceId);
+
+      if (!post) {
+        throw new NotAcceptableException('Post not found');
+      }
+
+      recipientId = post.user_id;
+    } else {
+      const comment = await this.commentRepository.findById(referenceId);
+
+      if (!comment) {
+        throw new NotAcceptableException('Comment not found');
+      }
+
+      recipientId = comment.user_id;
     }
 
     const like = await this.likeRepository
-      .create(postId, user.id, type)
+      .create(referenceId, user.id, type)
       .catch((err) => {
         if (err.code === PrismaErrorCode.uniqueConstraint) {
-          throw new BadRequestException('You already liked this post');
+          throw new BadRequestException(
+            `You already liked this ${type === LikeReferenceType.POST ? 'post' : 'comment'}`,
+          );
         }
 
         throw err;
@@ -225,7 +241,7 @@ export class PostsService {
       new BaseNotificationPayload({
         actorId: user.id,
         actorName: user.name,
-        recipientId: post.user_id,
+        recipientId,
         referenceId: like.id,
       }),
     );
@@ -244,13 +260,7 @@ export class PostsService {
     const page = query?.page || 1;
     const offset = (page - 1) * limit;
 
-    const comments = await this.commentRepository.findByPostId(
-      postId,
-      limit,
-      offset,
-    );
-
-    return { comments };
+    return await this.commentRepository.findByPostId(postId, limit, offset);
   }
 
   async getPostCommentsChildren(commentId: string, query: PaginationDto) {
@@ -258,13 +268,11 @@ export class PostsService {
     const page = query?.page || 1;
     const offset = (page - 1) * limit;
 
-    const comments = await this.commentRepository.findChildrenByCommentId(
+    return await this.commentRepository.findChildrenByCommentId(
       commentId,
       limit,
       offset,
     );
-
-    return { comments };
   }
 
   async addComment(id: string, data: CreatePostCommentDto, user: User) {
@@ -304,9 +312,7 @@ export class PostsService {
       throw new BadRequestException('You are not the owner of this comment');
     }
 
-    await this.commentRepository.update(id, data);
-
-    return { success: true };
+    return await this.commentRepository.update(id, data);
   }
 
   async deleteComment(commentId: string, userId: string) {

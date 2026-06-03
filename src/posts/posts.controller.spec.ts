@@ -275,14 +275,6 @@ describe('PostsController', () => {
 
   describe('commentLike', () => {
     it('should add a like to a comment', async () => {
-      const existingPost: Post = {
-        id: 'comment-123',
-        content: 'content',
-        user_id: 'owner-456',
-        created_at: now,
-        updated_at: now,
-        deleted_at: null,
-      };
       const like: Like = {
         id: 'like-123',
         user_id: 'user-123',
@@ -291,7 +283,10 @@ describe('PostsController', () => {
         created_at: now,
       };
 
-      postRepository.findOne.mockResolvedValue(existingPost);
+      commentRepository.findById.mockResolvedValue({
+        id: 'comment-123',
+        user_id: 'owner-456',
+      } as Comment);
       likeRepository.create.mockResolvedValue(like);
 
       const result = await controller.commentLike('comment-123', mockRequest);
@@ -354,7 +349,7 @@ describe('PostsController', () => {
         10,
         0,
       );
-      expect(result).toEqual({ comments: commentsResponse });
+      expect(result).toEqual(commentsResponse);
     });
   });
 
@@ -379,7 +374,7 @@ describe('PostsController', () => {
         10,
         0,
       );
-      expect(result).toEqual({ comments: commentsResponse });
+      expect(result).toEqual(commentsResponse);
     });
   });
 
@@ -453,7 +448,7 @@ describe('PostsController', () => {
       expect(commentRepository.update).toHaveBeenCalledWith('comment-123', {
         content: 'updated comment',
       });
-      expect(result).toEqual({ success: true });
+      expect(result).toEqual(updatedComment);
     });
   });
 

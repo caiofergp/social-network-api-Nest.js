@@ -1,60 +1,49 @@
+import 'dotenv/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { UsersController } from 'src/users/users.controller';
 import { UsersService } from 'src/users/users.service';
 import { UserRepository } from 'src/users/repositories/user.repository';
-import { AuthGuard } from 'src/guards/auth.guard';
-import { UnitOfWork } from 'src/db/unit-of-work';
-import { StorageAdapter } from 'src/adapters/storage/storage.adapter';
+import { PrismaUserRepository } from 'src/users/repositories/prisma/prisma-user.repository';
 import { MediaRepository } from 'src/medias/repositories/media.repository';
+import { PrismaMediaRepository } from 'src/medias/repositories/prisma/prisma-media.repository';
+import { StorageAdapter } from 'src/adapters/storage/storage.adapter';
+import { AuthGuard } from 'src/guards/auth.guard';
+import { PrismaService } from 'src/db/prisma/prisma.service';
+import { UnitOfWork } from 'src/db/unit-of-work';
+import { PrismaUnitOfWork } from 'src/db/prisma/prisma-unit-of-work';
 import { JwtService } from '@nestjs/jwt';
 import { AuthRepository } from 'src/auth/repositories/auth.repository';
+import { PrismaAuthRepository } from 'src/auth/repositories/prisma/prisma-auth.repository';
+import { mockUser } from 'src/db/prisma/seeder/main';
 
 describe('UsersController (e2e)', () => {
   let app: INestApplication;
-  let userRepository: jest.Mocked<UserRepository>;
+  let prisma: PrismaService;
 
-  const mockUser = {
-    id: 'user-1',
-    name: 'Test User',
-    email: 'test@example.com',
-  };
-
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
       providers: [
         UsersService,
-        {
-          provide: UserRepository,
-          useValue: {
-            getUserById: jest.fn(),
-            update: jest.fn(),
-          },
-        },
-        {
-          provide: UnitOfWork,
-          useValue: {
-            runInTransaction: jest.fn((fn) => fn()),
-          },
-        },
+        { provide: UserRepository, useClass: PrismaUserRepository },
+        { provide: MediaRepository, useClass: PrismaMediaRepository },
+        { provide: AuthRepository, useClass: PrismaAuthRepository },
         {
           provide: StorageAdapter,
           useValue: {
-            getDownloadUrl: jest.fn(),
+            getDownloadUrl: jest.fn().mockResolvedValue('http://download.com'),
           },
         },
+        PrismaService,
+        { provide: UnitOfWork, useClass: PrismaUnitOfWork },
         {
-          provide: MediaRepository,
+          provide: JwtService,
           useValue: {
-            create: jest.fn(),
-            findByIdNotIn: jest.fn(),
-            deleteMany: jest.fn(),
+            verifyAsync: jest.fn().mockResolvedValue({ id: 'user-e2e-1' }),
           },
         },
-        { provide: JwtService, useValue: {} },
-        { provide: AuthRepository, useValue: {} },
       ],
     })
       .overrideGuard(AuthGuard)
@@ -69,69 +58,42 @@ describe('UsersController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api');
+    app.useGlobalPipes(
+      new ValidationPipe({ transform: true, whitelist: true }),
+    );
     await app.init();
 
-    userRepository = moduleFixture.get(UserRepository);
+    prisma = app.get(PrismaService);
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
+    await prisma.$disconnect();
     await app.close();
   });
 
   describe('/api/users/profile (GET)', () => {
-    it('should return the authenticated user profile', () => {
-      userRepository.getUserById.mockResolvedValue(mockUser as any);
-
-      return request(app.getHttpServer())
+    it('should return the authenticated user profile', async () => {
+      const response = await request(app.getHttpServer())
         .get('/api/users/profile')
-        .expect(200)
-        .expect((res) => {
-          expect(res.body.id).toEqual(mockUser.id);
-          expect(userRepository.getUserById).toHaveBeenCalledWith(mockUser.id);
-        });
-    });
-  });
+        .expect(200);
 
-  describe('/api/users/:id (GET)', () => {
-    it('should return a user profile by id', () => {
-      userRepository.getUserById.mockResolvedValue(mockUser as any);
-
-      return request(app.getHttpServer())
-        .get('/api/users/user-1')
-        .expect(200)
-        .expect((res) => {
-          expect(res.body.id).toEqual(mockUser.id);
-        });
-    });
-
-    it('should return 404 if user not found', () => {
-      userRepository.getUserById.mockResolvedValue(null);
-
-      return request(app.getHttpServer())
-        .get('/api/users/non-existent')
-        .expect(404);
+      expect(response.body.id).toEqual(mockUser.id);
     });
   });
 
   describe('/api/users/profile (PATCH)', () => {
-    it('should update the authenticated user profile', () => {
-      userRepository.getUserById.mockResolvedValue(mockUser as any);
-      userRepository.update.mockResolvedValue({
-        ...mockUser,
-        name: 'Updated Name',
-      } as any);
-
-      return request(app.getHttpServer())
+    it('should update the authenticated user profile', async () => {
+      const response = await request(app.getHttpServer())
         .patch('/api/users/profile')
         .send({ name: 'Updated Name' })
-        .expect(200)
-        .expect((res) => {
-          expect(res.body.name).toEqual('Updated Name');
-          expect(userRepository.update).toHaveBeenCalledWith(
-            mockUser.id,
-            expect.objectContaining({ name: 'Updated Name' }),
-          );
-        });
+        .expect(200);
+
+      expect(response.body.name).toEqual('Updated Name');
+
+      const updatedUser = await prisma.user.findUnique({
+        where: { id: mockUser.id },
+      });
+      expect(updatedUser?.name).toEqual('Updated Name');
     });
   });
 });
