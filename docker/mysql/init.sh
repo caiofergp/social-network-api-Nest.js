@@ -1,15 +1,18 @@
 #!/bin/bash
 set -e
 
-if [ -n "$DATABASE_URL_TEST" ]; then
-    DB_NAME=$(echo $DATABASE_URL_TEST | sed -E 's/.*\/([^?]+).*/\1/')
+URL_TO_PARSE="${DATABASE_URL_TEST:-$DATABASE_URL}"
+
+if [ -n "$URL_TO_PARSE" ]; then
+    DB_NAME=$(echo $URL_TO_PARSE | sed -E 's/.*\/([^?]+).*/\1/')
     
-    if [ -n "$DB_NAME" ]; then
-        echo "Creating database '$DB_NAME' from DATABASE_URL_TEST..."
+    if [ -n "$DB_NAME" ] && [ "$DB_NAME" != "$MYSQL_DATABASE" ]; then
+        echo "Creating database '$DB_NAME' extracted from environment..."
         mysql -u root -p"$MYSQL_ROOT_PASSWORD" <<-EOSQL
             CREATE DATABASE IF NOT EXISTS \`$DB_NAME\`;
 EOSQL
     fi
 else
-    echo "DATABASE_URL_TEST not defined. Skipping database creation."
+    echo "No test database URL found. Skipping secondary database creation."
 fi
+

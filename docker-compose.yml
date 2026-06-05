@@ -85,7 +85,8 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=password
       - MYSQL_DATABASE=social-network
-      - DATABASE_URL_TEST=${DATABASE_URL_TEST}
+    env_file:
+      - .env.test
     volumes:
       - mysql-data:/var/lib/mysql
       - ./docker/mysql/init.sh:/docker-entrypoint-initdb.d/init.sh
